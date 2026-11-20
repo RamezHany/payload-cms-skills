@@ -51,7 +51,7 @@ Request only the scopes the project uses:
 
 `drive.file` does not see a folder a person created and then shared. The service account only reaches files shared with its email, so the broader Drive scope is the one that can upload into that folder.
 
-Share the spreadsheet with `GOOGLE_CLIENT_EMAIL` as Editor. In Search Console, add that same email as a user on the property (Settings, Users and permissions, Full). Full is required for sitemap submit. Read-only analytics needs at least Restricted; use Full when the same client also submits the sitemap.
+Share the spreadsheet with `GOOGLE_CLIENT_EMAIL` as Editor. In Search Console, add that same email as a user on the property (Settings, Users and permissions). Sitemap submit needs a user who can manage the property. The console labels that role Full. Read-only query access is a lower role. Confirm the current labels in the Search Console UI before saving. Use the role that can submit a sitemap when the same client also calls `sitemaps.submit`.
 
 ## Step 3: Sheets
 
