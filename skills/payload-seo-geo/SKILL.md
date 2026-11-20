@@ -108,17 +108,17 @@ The website template already uses this variable. This skill requires it.
 
 ## Invalidation map
 
-Add the llms paths to the existing pages, posts, services, and legal-pages rows. Paths below are the ones this skill adds. Two locales.
+Add these rows to `PROJECT.md` in the cell form from the `payload-testing` skill. Keep a single `Locales: en, ar` line above the table. `layout` means the global tag only. Do not call `revalidatePath` with `'layout'`.
 
-| Collection or global | Trigger | Paths | Tags | Writes this skill adds |
+| Collection or global | Trigger | Paths | Tags | Writes per save |
 | --- | --- | --- | --- | --- |
 | site-settings | update | layout | `global_site-settings` | all routes x locales, rare, accepted |
-| pages | publish | `/<locale>/<slug>`, `/llms.txt` | `pages:<slug>`, `pages-sitemap` | +1 path |
-| posts | publish | `/<locale>/posts/<slug>`, `/<locale>/posts`, `/llms.txt` | `posts:<slug>`, `collection:posts`, `posts-sitemap` | existing post paths + 1 |
-| services | publish | `/<locale>/services/<slug>`, `/llms.txt` | `services:<slug>`, `services-sitemap` | +1 path |
-| legal-pages | publish | `/<locale>/legal/<slug>`, `/llms.txt` | `legal-pages:<slug>`, `legal-pages-sitemap` | +1 path |
+| pages | publish | `/<locale>/<slug>`, `/llms.txt` | `pages:<slug>`, `pages-sitemap` | 2 + 1 = 3 |
+| posts | publish | `/<locale>/posts/<slug>`, `/<locale>/posts`, `/llms.txt` | `posts:<slug>`, `collection:posts`, `posts-sitemap` | 4 + 1 = 5 |
+| services | publish | `/<locale>/services/<slug>`, `/llms.txt` | `services:<slug>`, `services-sitemap` | 2 + 1 = 3 |
+| legal-pages | publish | `/<locale>/legal/<slug>`, `/llms.txt` | `legal-pages:<slug>`, `legal-pages-sitemap` | 2 + 1 = 3 |
 
-Write the `PROJECT.md` cells with the templates from the `payload-testing` skill: `/<locale>/...`, `<slug>`, `layout`, and `none`. A `layout` row means the global tag only. Do not call `revalidatePath` with `'layout'`. Add `/llms-full.txt` beside `/llms.txt` only when that route exists.
+The trace fixtures are `trace-page`, `trace-post`, `trace-service`, and `trace-legal`, with no category and not featured on the home page, so the hook returns exactly these paths. A page whose slug is `home` regenerates `/<locale>` instead of `/<locale>/home`. Keep that branch in `publicPath`. Add `/llms-full.txt` beside `/llms.txt` only when that route exists. Category or home paths stay off these rows unless the fixture actually renders on those routes.
 
 Detail queries keep `<collection>:<docSlug>` only. Listing queries keep `collection:<slug>` only. The hook log line is the check.
 

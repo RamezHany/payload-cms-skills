@@ -114,9 +114,9 @@ The count uses `overrideAccess: true` because collection read is closed to the p
 import { headers } from 'next/headers'
 import { after } from 'next/server'
 
-import { getPayloadClient } from '@/lib/payload'
-import { appendLeadRow } from '@/lib/google'
 import { sendLeadNotification } from '@/lib/email'
+import { appendLeadRow } from '@/lib/google'
+import { getPayloadClient } from '@/lib/payload'
 import { verifyTurnstile } from '@/lib/turnstile'
 
 import { clientIp, hashIp, isRateLimited } from './server/guard'
@@ -193,8 +193,17 @@ import { useLocale, useTranslations } from 'next-intl'
 import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
 
+import { locales, type AppLocale } from '@/i18n/locales'
+
 import { submitLead } from '../actions'
 import { leadSchema, type LeadErrorCode, type LeadInput } from '../schema'
+
+function isLocale(value: string): value is AppLocale {
+  for (const locale of locales) {
+    if (locale === value) return true
+  }
+  return false
+}
 
 function messageFor(code: LeadErrorCode, t: ReturnType<typeof useTranslations>): string {
   switch (code) {
@@ -219,24 +228,27 @@ function messageFor(code: LeadErrorCode, t: ReturnType<typeof useTranslations>):
 
 export function LeadForm({ source }: { source: string }) {
   const t = useTranslations('leads')
-  const locale = useLocale()
+  const currentLocale = useLocale()
+  const locale = isLocale(currentLocale) ? currentLocale : locales[0]
   const turnstile = useRef<TurnstileInstance>(null)
   const form = useForm<LeadInput>({
     resolver: zodResolver(leadSchema),
-    defaultValues: { source, locale, consent: undefined, companyWebsite: '' },
+    defaultValues: { source, locale, companyWebsite: '' },
   })
   const mutation = useMutation({
     mutationFn: submitLead,
     onSuccess: (result) => {
-      if (result.ok) form.reset({ source, locale, consent: undefined, companyWebsite: '' })
+      if (result.ok) form.reset({ source, locale, companyWebsite: '' })
       turnstile.current?.reset()
     },
   })
 
+  if (!isLocale(currentLocale)) return null
+
   return (
     <form
       noValidate
-      className="grid gap-4 text-start"
+      className="relative grid gap-4 text-start"
       onSubmit={form.handleSubmit((values) => {
         const params = new URLSearchParams(window.location.search)
         mutation.mutate({
@@ -283,10 +295,11 @@ export function LeadForm({ source }: { source: string }) {
         ref={turnstile}
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''}
         options={{ action: 'lead_submit', theme: 'auto' }}
-        onSuccess={(token) => form.setValue('turnstileToken', token)}
+        onSuccess={(token) => form.setValue('turnstileToken', token, { shouldValidate: true })}
         onExpire={() => form.setValue('turnstileToken', '')}
         onError={() => form.setValue('turnstileToken', '')}
       />
+      {form.formState.errors.turnstileToken && <p role="alert">{t('verificationFailed')}</p>}
 
       <button type="submit" disabled={mutation.isPending}>{t('submit')}</button>
       {mutation.data && !mutation.data.ok && <p role="alert">{messageFor(mutation.data.error, t)}</p>}

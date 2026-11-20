@@ -104,14 +104,14 @@ function fieldSchema(field: BuilderBlock): z.ZodType | null {
       return field.required ? z.literal(true) : z.boolean().optional()
     case 'select':
     case 'radio': {
-      const values = (field.options ?? []).map((option) => option.value).filter(Boolean)
-      if (values.length === 0) return z.string().max(200).optional()
-      const asTuple = [values[0], ...values.slice(1)] as [string, ...string[]]
-      const schema = z.enum(asTuple)
+      const values = (field.options ?? []).map((option) => option.value).filter((value) => value.length > 0)
+      const [first, ...rest] = values
+      if (!first) return field.required ? z.string().trim().min(1).max(200) : z.string().trim().max(200).optional()
+      const schema = z.enum([first, ...rest])
       return field.required ? schema : schema.optional()
     }
     case 'date':
-      return field.required ? z.iso.datetime() : z.iso.datetime().optional()
+      return field.required ? z.iso.date() : z.iso.date().optional()
     case 'text':
     case 'textarea':
       return field.required ? z.string().trim().min(1).max(5000) : z.string().trim().max(5000).optional()
@@ -123,11 +123,11 @@ function fieldSchema(field: BuilderBlock): z.ZodType | null {
 }
 ```
 
-`z.iso.datetime()` is the Zod 4 name. If the installed `zod` types do not export it, check `zod` 4.6 for the ISO datetime helper and use that. Do not replace it with a regex.
+`z.iso.date()` is the Zod 4 helper for a `YYYY-MM-DD` value, which is what a date input submits (`zod` 4.6.7 exports `z.iso.date`). Do not replace it with a regex.
 
 `message` blocks are display-only. Skip them in the schema and render the rich text as text, not as an input.
 
-Render each remaining block with `register(field.name)` inside React Hook Form. The server action `safeParse`s the same dynamic schema, then writes:
+Render each remaining block with `register(field.name)` inside React Hook Form. Before `safeParse`, replace `''` with `undefined` so an optional email or number is absent rather than invalid. The server action then writes:
 
 ```ts
 await payload.create({

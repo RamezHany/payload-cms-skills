@@ -74,7 +74,7 @@ The cookie-settings button and the badge sit in the footer component. The badge 
 
 ## Invalidation map
 
-Two locales. `/llms.txt` is included because the `payload-seo-geo` skill lists published legal pages there. Add `/llms-full.txt` only when that route exists.
+Use the `PROJECT.md` cell form from the `payload-testing` skill, under the single line `Locales: en, ar`. `/llms.txt` is included because the `payload-seo-geo` skill lists published legal pages there. Add `/llms-full.txt` only when that route exists. The legal-pages fixture slug is `trace-legal`.
 
 | Collection or global | Trigger | Paths | Tags | Writes per save |
 | --- | --- | --- | --- | --- |

@@ -64,18 +64,14 @@ Wait until the provider shows the domain as verified before sending the launch t
 ```ts
 import 'server-only'
 
+import { locales, type AppLocale } from '@/i18n/locales'
 import { getPayloadClient } from '@/lib/payload'
-import type { AppLocale } from '@/i18n/locales'
 
-type LeadMail = {
-  id: number | string
-  locale: AppLocale
-  name: string
-  email: string
-  phone?: string | null
-  message: string
-  source: string
-  pageUrl?: string | null
+function isAppLocale(value: string): value is AppLocale {
+  for (const locale of locales) {
+    if (locale === value) return true
+  }
+  return false
 }
 
 function escapeHtml(value: string): string {
@@ -112,7 +108,8 @@ export async function sendLeadNotification(leadId: number | string): Promise<voi
   })
   if (!lead) return
 
-  const text = copy(lead.locale as AppLocale)
+  if (typeof lead.locale !== 'string' || !isAppLocale(lead.locale)) return
+  const text = copy(lead.locale)
   const html = `<p>${escapeHtml(text.intro)}</p>
 <ul>
 <li>${escapeHtml(lead.name)}</li>
