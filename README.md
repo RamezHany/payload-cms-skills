@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/banner.svg" alt="Payload CMS Skills — Agent Skills that make coding agents build Payload CMS 3 and Next.js websites the same way every time." width="100%">
+</p>
+
 # Payload CMS Skills
 
 Agent Skills that make coding agents build **Payload CMS 3 + Next.js** websites the same way every time: started from the official template, with working live preview and saves, uploads that go straight from the browser, and guardrails for unattended runs.
