@@ -19,6 +19,7 @@ All notable changes to this project are documented here. The format follows [Kee
 - All guidance pinned to Payload 3.x stable (verified 3.94.0) and Next.js 16.
 - SQLite configuration keeps Payload's default transaction behavior; `transactionOptions: {}` is no longer recommended.
 - Cache revalidation uses the two-argument `revalidateTag` required by Next.js 16.
+- Cache invalidation is designed as a metered cost, based on a production audit where a site used 72% of the Vercel Hobby ISR write allowance: no shared tags on content queries, no layout-wide revalidation for ordinary content, per-document targets functions, media uploads that revalidate nothing, no time-based revalidation on pages covered by targets, and an invalidation map in `PROJECT.md`.
 - Uploads go directly from the browser to storage instead of through serverless functions.
 
 ### Removed

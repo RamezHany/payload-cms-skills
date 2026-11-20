@@ -1,6 +1,6 @@
 ---
 name: agent-guardrails
-description: Hard operating rules for coding agents on Payload CMS + Next.js projects, especially unattended, overnight, or turbo runs. Use in every session. Prevents scope creep, rebuilding from scratch, throwaway scripts that roam the machine, retry loops that burn tokens, leaked secrets, destructive database commands, and false "done" claims.
+description: Hard operating rules for coding agents on Payload CMS + Next.js projects, especially unattended, overnight, or turbo runs. Use in every session. Prevents scope creep, rebuilding from scratch, throwaway scripts that roam the machine, retry loops that burn tokens, leaked secrets, destructive database commands, "invalidate everything to be safe" cache hooks that exhaust free-tier quotas, and false "done" claims.
 license: MIT
 metadata:
   version: "1.0.0"
@@ -64,19 +64,28 @@ A script is allowed only when a skill ships it in `assets/` or `scripts/` and te
 4. Never delete media, users, or submissions to "clean up" test data in a shared database.
 5. Never paste real customer data into code, tests, or seed files.
 
-## 6. Git
+## 6. Cost and blast radius
+
+"When in doubt, do more" is wrong when "more" is billed or touches every page. Choose the smallest change that is provably correct.
+
+1. Cache invalidation is metered on Vercel, and when the free allowance runs out, content silently stops updating. Never add a cache tag shared by all content queries. Never call `revalidatePath(path, 'layout')` except in a hook for a global the layout renders, with a comment naming that data. Revalidate only the routes that render the changed document (`payload-performance` skill, Step 2).
+2. Never schedule crons, polling, or background work more often than the feature requires.
+3. Never raise limits or plan-dependent settings (function duration, retries, image sizes, query limits) beyond what the task needs.
+4. When a broader option is chosen deliberately, the code comment states the reason and the expected cost, and `PROJECT.md` records it under `## Decisions`.
+
+## 7. Git
 
 1. Work on a feature branch. Never commit or push to `main` or `master`.
 2. Commit after each completed step with a message that names the step.
 3. Never force push, rewrite published history, or commit `.env*` files other than `.env.example`.
 
-## 7. Verification and honesty
+## 8. Verification and honesty
 
 1. A task is done only when the skill's "Done when" checks have been run and passed.
 2. Report failing checks plainly. Never claim a test passed if you did not run it.
 3. Do not disable tests, lint rules, or type checks to make a check pass. Do not add `// @ts-ignore` or `as any` to silence errors.
 
-## 8. Stop and ask
+## 9. Stop and ask
 
 Stop the affected task and write a question under `## Questions` when any of these is needed:
 
@@ -88,7 +97,7 @@ Stop the affected task and write a question under `## Questions` when any of the
 
 In an interactive session, ask the user directly as well.
 
-## 9. Unattended runs
+## 10. Unattended runs
 
 Before starting an overnight or turbo run:
 
@@ -96,7 +105,7 @@ Before starting an overnight or turbo run:
 - [ ] A feature branch is checked out
 - [ ] `.env` exists with the variables the phase needs; if not, skip tasks that need them
 
-During the run, follow sections 1 to 8 strictly. Never wait for input: record questions and continue with independent tasks.
+During the run, follow sections 1 to 9 strictly. Never wait for input: record questions and continue with independent tasks.
 
 At the end of the run, add a `## Session log` entry to `PROJECT.md`:
 

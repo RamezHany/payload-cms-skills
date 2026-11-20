@@ -162,7 +162,11 @@ export function LivePreviewListener() {
 
 ## Step 6: Revalidate only on publish
 
-Autosave writes a draft every 100 ms of typing. Revalidation hooks must ignore drafts, or they will flood the cache. Follow the template's `revalidatePage` hook: revalidate when `doc._status === 'published'`, and revalidate the old path when a published doc is unpublished. On localized sites, revalidate the path for every locale. Details are in the `payload-performance` skill.
+Autosave writes a draft every 100 ms of typing, and live preview reads drafts dynamically, so drafts never need revalidation. Every revalidation on Vercel is a metered ISR write, so the hooks must be exact:
+
+1. Revalidate only when a document is published, unpublished, renamed, or deleted. Draft-only saves revalidate nothing.
+2. Revalidate exactly the routes that render the document: its detail path for each locale, the listings that show it, and the home page only if it is featured there. Never revalidate the layout and never expire a tag shared by all content.
+3. Use the `revalidateOnPublish` hook factory and a per-collection targets function from the `payload-performance` skill. A worked example for localized posts is in [references/localized-page.md](references/localized-page.md).
 
 ## Step 7: Headers and hosting
 
@@ -188,4 +192,5 @@ Autosave writes a draft every 100 ms of typing. Revalidation hooks must ignore d
 - [ ] Typing in a field updates the iframe within about a second, without a manual save
 - [ ] Switching locale in the admin switches the iframe to the same locale
 - [ ] The published page does not show unpublished draft changes
+- [ ] Typing in the admin produces no `revalidate` log lines; publishing produces one line listing only that document's routes
 - [ ] The live preview test in the `payload-testing` skill passes

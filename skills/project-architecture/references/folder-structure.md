@@ -54,8 +54,10 @@ Canonical tree for a localized site with a blog, booking, and payments. Remove f
 │   │   ├── Users/index.ts
 │   │   ├── Pages/
 │   │   │   ├── index.ts
-│   │   │   └── hooks/revalidatePage.ts
+│   │   │   └── hooks/pageTargets.ts   routes that render a page (payload-performance)
 │   │   ├── Posts/
+│   │   │   ├── index.ts
+│   │   │   └── hooks/postTargets.ts
 │   │   ├── LegalPages/
 │   │   ├── Leads/
 │   │   ├── Bookings/
@@ -89,7 +91,7 @@ Canonical tree for a localized site with a blog, booking, and payments. Remove f
 │   │   ├── Footer/
 │   │   └── SiteSettings/
 │   ├── heros/                     from the template
-│   ├── hooks/                     shared Payload hooks
+│   ├── hooks/                     shared Payload hooks (revalidateOnPublish.ts)
 │   ├── i18n/
 │   │   ├── routing.ts
 │   │   ├── request.ts
@@ -104,7 +106,8 @@ Canonical tree for a localized site with a blog, booking, and payments. Remove f
 │   ├── utilities/
 │   │   ├── getURL.ts
 │   │   ├── generatePreviewPath.ts
-│   │   └── getCachedDocument.ts
+│   │   ├── getCachedDocument.ts
+│   │   └── revalidation.ts        tags, localized paths, applyRevalidation (server-only)
 │   ├── payload.config.ts
 │   ├── payload-types.ts           generated; never edit
 │   └── proxy.ts

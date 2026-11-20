@@ -66,6 +66,16 @@ Record which accounts exist. Never write secret values here; secrets go in `.env
 
 - [ ] 1. Architecture - skill: project-architecture - Done when: TBD
 
+## Invalidation map
+
+One row per collection and global with public routes. Writes per save = paths revalidated x locales. Only layout-rendered globals may regenerate all routes. See the `payload-performance` skill.
+
+| Collection or global | Trigger | Paths (per locale) | Tags | Writes per save |
+| --- | --- | --- | --- | --- |
+| TBD | TBD | TBD | TBD | TBD |
+
+ISR writes baseline after launch: TBD per day (Vercel Usage page).
+
 ## Decisions
 
 Record decisions with a date, for example: `2026-01-15: Use Kashier instead of Paymob (client request).`

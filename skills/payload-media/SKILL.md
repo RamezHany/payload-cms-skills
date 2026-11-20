@@ -59,6 +59,7 @@ Start from the template's `src/collections/Media.ts` and apply these rules:
 4. Restrict `mimeTypes` to what the site uses, for example `['image/*', 'application/pdf']`.
 5. Access: `read` public, `create`/`update`/`delete` for authenticated users with an editor role (`payload-auth-rbac`).
 6. `folders: true` helps editors organize large libraries.
+7. Revalidation: a new upload revalidates nothing, because no published page references it yet. An edit to an existing file revalidates only the published documents that reference it through known fields (for example `heroImage`, `meta.image`). Never revalidate the layout or a site-wide tag from a media hook: a production site that did so spent most of its Vercel ISR write allowance on uploads. Use the `revalidateMediaReferences` hook from the `payload-performance` skill.
 
 ## Step 4: Compress images in the browser before upload
 
@@ -145,11 +146,13 @@ R2 variables are listed in the R2 reference.
 | R2 direct upload fails with a CORS error | Bucket CORS missing `PUT` or headers | R2 reference, CORS section |
 | Images are huge on mobile | No `sizes`, or loader not configured | Step 5 |
 | Mux video stuck on "preparing" | Webhook not configured or wrong secret | Video reference |
+| Vercel ISR writes climb with every upload | Media hook revalidates the layout or a shared tag | Step 3 rule 7 |
 
 ## Done when
 
 - [ ] Storage plugin configured with `clientUploads: true`
 - [ ] Uploading a 10 MB photo in the admin succeeds on the deployed site, and the stored file is WebP and smaller than the original
 - [ ] The media document reloads with its URL after a page refresh
+- [ ] Uploading a new file produces no `revalidate` log line
 - [ ] Frontend images use `next/image` with `sizes` and the configured loader
 - [ ] Video plays through the chosen provider without loading the player before interaction

@@ -86,43 +86,44 @@ const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: T
 - `hasLocale` narrows the string to a configured next-intl locale. It is assignable to Payload's `TypedLocale` because both use the same codes (enforced in `payload-localization`). If TypeScript reports a mismatch, the two locale lists have drifted; fix the lists, do not cast.
 - `generateStaticParams` prebuilds published posts for every locale. Draft mode renders dynamically, so drafts never enter the static cache.
 - `RichText` and `generateMeta` come from the website template. Copy them from `templates/website/src` on the `3.x` branch if the project does not have them.
-- The revalidation hook for posts must revalidate `/${locale}/posts/${slug}` for every locale when a post is published.
+- Publishing a post revalidates its detail path for every locale plus the listings that show it. Nothing else.
 
-## Revalidation hook for localized posts
+## Revalidation for localized posts
 
-`src/collections/Posts/hooks/revalidatePost.ts`:
+Posts use the shared helpers (`src/utilities/revalidation.ts`) and the `revalidateOnPublish` hook factory (`src/hooks/revalidateOnPublish.ts`) from the `payload-performance` skill. The targets function lists only the routes that render a post.
+
+`src/collections/Posts/hooks/postTargets.ts`, for a site where posts appear only on their own page and the posts index:
 
 ```ts
-import { revalidatePath, revalidateTag } from 'next/cache'
-import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
-
-import { routing } from '@/i18n/routing'
 import type { Post } from '@/payload-types'
+import {
+  collectionTag,
+  docTag,
+  localizedPaths,
+  noTargets,
+  sitemapTag,
+  type RevalidationTargets,
+} from '@/utilities/revalidation'
 
-const pathsFor = (slug: string) => routing.locales.map((locale) => `/${locale}/posts/${slug}`)
-
-export const revalidatePost: CollectionAfterChangeHook<Post> = ({ doc, previousDoc, req: { payload, context } }) => {
-  if (context.disableRevalidate) return doc
-
-  if (doc._status === 'published' && doc.slug) {
-    for (const path of pathsFor(doc.slug)) revalidatePath(path)
-    revalidateTag('posts-sitemap', { expire: 0 })
-    payload.logger.info(`Revalidated post ${doc.slug}`)
+export function postTargets(post: Pick<Post, 'slug'>): RevalidationTargets {
+  if (!post.slug) return noTargets
+  return {
+    reason: `posts:${post.slug}`,
+    paths: [...localizedPaths(`/posts/${post.slug}`), ...localizedPaths('/posts')],
+    tags: [docTag('posts', post.slug), collectionTag('posts'), sitemapTag('posts')],
   }
-
-  if (previousDoc?._status === 'published' && previousDoc.slug && (doc._status !== 'published' || previousDoc.slug !== doc.slug)) {
-    for (const path of pathsFor(previousDoc.slug)) revalidatePath(path)
-    revalidateTag('posts-sitemap', { expire: 0 })
-  }
-
-  return doc
-}
-
-export const revalidatePostDelete: CollectionAfterDeleteHook<Post> = ({ doc, req: { context } }) => {
-  if (!context.disableRevalidate && doc?.slug) {
-    for (const path of pathsFor(doc.slug)) revalidatePath(path)
-    revalidateTag('posts-sitemap', { expire: 0 })
-  }
-  return doc
 }
 ```
+
+If the site also lists posts on category pages or features them on the home page, add exactly those paths (the `payload-performance` skill has the full version with a category lookup).
+
+Wiring in `src/collections/Posts/index.ts`:
+
+```ts
+hooks: {
+  afterChange: [revalidateOnPublish<Post>('posts', postTargets)],
+  afterDelete: [revalidateOnDelete<Post>(postTargets)],
+},
+```
+
+With two locales, one publish costs four page writes (two detail paths, two index paths) plus the sitemap. Record that in the invalidation map in `PROJECT.md`.
