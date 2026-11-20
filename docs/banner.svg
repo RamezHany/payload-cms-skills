@@ -1,41 +1,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320">
-  <rect width="1280" height="320" fill="#f6f1e7"/>
-  <rect x="8" y="8" width="1264" height="304" fill="none" stroke="#d9d2c5" stroke-width="2"/>
-  <rect x="8" y="8" width="1264" height="6" fill="#0f6e56"/>
+  <!-- RH navy background -->
+  <rect width="1280" height="320" fill="#03245C"/>
 
-  <!-- decorative dot grid, top right -->
-  <g fill="#0f6e56" opacity="0.32">
-    <circle cx="1052" cy="52" r="3.5"/><circle cx="1086" cy="52" r="3.5"/><circle cx="1120" cy="52" r="3.5"/><circle cx="1154" cy="52" r="3.5"/><circle cx="1188" cy="52" r="3.5"/>
-    <circle cx="1052" cy="82" r="3.5"/><circle cx="1086" cy="82" r="3.5"/><circle cx="1120" cy="82" r="3.5"/><circle cx="1154" cy="82" r="3.5"/><circle cx="1188" cy="82" r="3.5"/>
-    <circle cx="1052" cy="112" r="3.5"/><circle cx="1086" cy="112" r="3.5"/><circle cx="1120" cy="112" r="3.5"/><circle cx="1154" cy="112" r="3.5"/><circle cx="1188" cy="112" r="3.5"/>
+  <!-- hairline grid -->
+  <g stroke="#E6E8ED" stroke-opacity="0.16" stroke-width="1">
+    <line x1="40" y1="0" x2="40" y2="320"/>
+    <line x1="1240" y1="0" x2="1240" y2="320"/>
+    <line x1="0" y1="54" x2="1280" y2="54"/>
+    <line x1="0" y1="262" x2="1280" y2="262"/>
   </g>
+
+  <!-- crosshairs at grid intersections -->
+  <g stroke="#0049FF" stroke-width="2">
+    <path d="M32 54 h16 M40 46 v16"/>
+    <path d="M1232 54 h16 M1240 46 v16"/>
+    <path d="M32 262 h16 M40 254 v16"/>
+    <path d="M1232 262 h16 M1240 254 v16"/>
+  </g>
+
+  <!-- top bar -->
+  <text x="76" y="35" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace" font-size="13" letter-spacing="2.5" fill="#E6E8ED">RAMEZHANY / PAYLOAD-CMS-SKILLS</text>
+  <text x="1204" y="35" text-anchor="end" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace" font-size="13" letter-spacing="2.5" fill="#E6E8ED">AGENT SKILLS // SKILL.MD</text>
 
   <!-- eyebrow -->
-  <text x="72" y="94" font-family="Consolas, 'Courier New', monospace" font-size="17" font-weight="bold" letter-spacing="4" fill="#0f6e56">AGENT SKILLS · OPEN SKILL.MD FORMAT</text>
+  <rect x="76" y="88" width="10" height="10" fill="#0049FF"/>
+  <text x="98" y="99" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace" font-size="14.5" letter-spacing="2" fill="#7DA2FF">// FOR PAYLOAD CMS 3 + NEXT.JS</text>
 
-  <!-- title -->
-  <text x="70" y="162" font-family="Georgia, 'Iowan Old Style', Palatino, serif" font-size="66" font-weight="bold" fill="#1c1915">Payload CMS Skills</text>
+  <!-- headline -->
+  <text x="74" y="190" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="86" font-weight="bold" letter-spacing="-1.5" fill="#FFFFFF">Payload CMS <tspan fill="#0049FF">Skills</tspan></text>
 
-  <!-- tagline -->
-  <text x="72" y="204" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" fill="#5c564c">Make coding agents build Payload CMS 3 + Next.js websites the same way — every time.</text>
+  <!-- subline -->
+  <text x="76" y="232" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace" font-size="15.5" letter-spacing="1" fill="#E6E8ED" fill-opacity="0.85">MAKE CODING AGENTS BUILD THE SAME WAY — EVERY TIME.</text>
 
-  <!-- install command pill -->
-  <rect x="72" y="234" width="566" height="44" rx="8" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
-  <text x="92" y="262" font-family="Consolas, 'Courier New', monospace" font-size="16.5" fill="#1c1915">$ npx skills add RamezHany/payload-cms-skills</text>
+  <!-- bottom row: install command -->
+  <rect x="76" y="276" width="520" height="34" fill="none" stroke="#E6E8ED" stroke-opacity="0.4" stroke-width="1"/>
+  <text x="90" y="299" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace" font-size="14.5" fill="#FFFFFF"><tspan fill="#0049FF" font-weight="bold">$</tspan> npx skills add RamezHany/payload-cms-skills</text>
 
-  <!-- tech chips -->
-  <g font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#5c564c">
-    <rect x="664" y="234" width="92" height="44" rx="22" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
-    <text x="710" y="262" text-anchor="middle">Payload 3</text>
-    <rect x="766" y="234" width="80" height="44" rx="22" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
-    <text x="806" y="262" text-anchor="middle">Next.js</text>
-    <rect x="856" y="234" width="102" height="44" rx="22" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
-    <text x="907" y="262" text-anchor="middle">TypeScript</text>
-    <rect x="968" y="234" width="66" height="44" rx="22" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
-    <text x="1001" y="262" text-anchor="middle">Turso</text>
-    <rect x="1044" y="234" width="74" height="44" rx="22" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
-    <text x="1081" y="262" text-anchor="middle">Vercel</text>
-    <rect x="1128" y="234" width="58" height="44" rx="22" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
-    <text x="1157" y="262" text-anchor="middle">MCP</text>
-  </g>
+  <!-- bottom row: stack specs -->
+  <text x="1204" y="299" text-anchor="end" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace" font-size="13.5" letter-spacing="1.5" fill="#E6E8ED" fill-opacity="0.8">PAYLOAD 3 / NEXT.JS / TYPESCRIPT / TURSO / VERCEL / MCP</text>
 </svg>
