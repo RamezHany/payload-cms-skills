@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Payload CMS Skills</title>
+  <meta name="description" content="Agent Skills for Payload CMS 3 and Next.js. Phases, install, and the skill index.">
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <header>
+    <h1>Payload CMS Skills</h1>
+    <p>Agent Skills that make coding agents build Payload CMS 3 and Next.js websites the same way every time: the official template, live preview, direct uploads, and guardrails for unattended runs.</p>
+    <nav>
+      <a href="#phases">Phases</a>
+      <a href="#install">Install</a>
+      <a href="#skills">Skills</a>
+      <a href="https://github.com/RamezHany/payload-cms-skills">GitHub</a>
+    </nav>
+  </header>
+  <main>
+    <h2 id="install">Install</h2>
+    <p>From the website project:</p>
+    <code class="cmd">npx skills add RamezHany/payload-cms-skills</code>
+    <p>One skill:</p>
+    <code class="cmd">npx skills add RamezHany/payload-cms-skills --skill payload-live-preview</code>
+    <p>Then tell the agent: use the <code>payload-project-kickoff</code> skill. The brief is in <code>PROJECT.md</code>.</p>
+
+    <h2 id="phases">Phases</h2>
+    <p>The kickoff skill writes this list into <code>PROJECT.md</code> and works on one phase at a time. Skip a phase the brief does not need. Keep this order.</p>
+    <p class="note">A Figma URL adds design handoff before phase 1. Motion, 3D, or a copied component adds the creative step after that handoff and before bootstrap.</p>
+    <table>
+      <thead>
+        <tr><th>Phase</th><th>Work</th><th>Skills</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Design</td>
+          <td>Only when the brief has a Figma file</td>
+          <td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/figma-handoff/SKILL.md">figma-handoff</a></td>
+        </tr>
+        <tr>
+          <td>Creative</td>
+          <td>Only when the design needs motion, 3D, or a copied component</td>
+          <td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/creative-frontend/SKILL.md">creative-frontend</a></td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Folder layout, and a refactor when the frontend already exists</td>
+          <td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/project-architecture/SKILL.md">project-architecture</a></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>App shell and data model</td>
+          <td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-bootstrap/SKILL.md">payload-bootstrap</a></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Roles, admin brand, languages</td>
+          <td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-auth-rbac/SKILL.md">payload-auth-rbac</a>, <a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-admin-branding/SKILL.md">payload-admin-branding</a>, <a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-localization/SKILL.md">payload-localization</a></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Preview, media, SEO, legal pages</td>
+          <td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-live-preview/SKILL.md">payload-live-preview</a>, <a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-media/SKILL.md">payload-media</a>, <a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-seo-geo/SKILL.md">payload-seo-geo</a>, <a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-legal-trust/SKILL.md">payload-legal-trust</a></td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Forms, bookings, integrations, client MCP</td>
+          <td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-forms-crm/SKILL.md">payload-forms-crm</a>, <a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-bookings-payments/SKILL.md">payload-bookings-payments</a>, <a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-integrations/SKILL.md">payload-integrations</a>, <a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-mcp/SKILL.md">payload-mcp</a></td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Cache cost and speed</td>
+          <td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-performance/SKILL.md">payload-performance</a></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Save, preview, and invalidation checks</td>
+          <td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-testing/SKILL.md">payload-testing</a></td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>Vercel, migrations, env, cron</td>
+          <td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-deploy-vercel/SKILL.md">payload-deploy-vercel</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="skills">Skills</h2>
+    <p>These sit on top of the official Payload skill, which the kickoff skill installs from the Payload 3.x branch. <code>agent-guardrails</code> stays loaded for the whole session.</p>
+    <table>
+      <thead>
+        <tr><th>Skill</th><th>Use it for</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-project-kickoff/SKILL.md">payload-project-kickoff</a></td><td>Entry point. Reads the brief, detects the scenario, writes the phases.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/agent-guardrails/SKILL.md">agent-guardrails</a></td><td>Scope, shell limits, secrets, and unattended runs.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/project-architecture/SKILL.md">project-architecture</a></td><td>Folder layout and refactor-first for an existing frontend.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/figma-handoff/SKILL.md">figma-handoff</a></td><td>Figma frames mapped onto locale routes.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/creative-frontend/SKILL.md">creative-frontend</a></td><td>Free motion, 3D, and copied components after a license check.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-bootstrap/SKILL.md">payload-bootstrap</a></td><td>Official template, or Payload added to an existing Next.js app.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-admin-branding/SKILL.md">payload-admin-branding</a></td><td>Admin panel matched to the site brand.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-localization/SKILL.md">payload-localization</a></td><td>Locales, RTL, and admin language synced with the content locale.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-live-preview/SKILL.md">payload-live-preview</a></td><td>Server-side live preview, drafts, and locales.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-media/SKILL.md">payload-media</a></td><td>Direct browser uploads, WebP, and video.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-seo-geo/SKILL.md">payload-seo-geo</a></td><td>Metadata, JSON-LD, sitemaps, and <code>/llms.txt</code>.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-legal-trust/SKILL.md">payload-legal-trust</a></td><td>Policy pages, trust center, and cookie consent.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-forms-crm/SKILL.md">payload-forms-crm</a></td><td>Forms, leads, and CSV export.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-bookings-payments/SKILL.md">payload-bookings-payments</a></td><td>Booking, payments, and Google Calendar.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-integrations/SKILL.md">payload-integrations</a></td><td>Email, Sheets, Drive, Search Console, and Turnstile.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-mcp/SKILL.md">payload-mcp</a></td><td>Optional MCP endpoint on the website.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-auth-rbac/SKILL.md">payload-auth-rbac</a></td><td>Roles and field access.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-performance/SKILL.md">payload-performance</a></td><td>Cache cost, bundles, and Core Web Vitals.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-testing/SKILL.md">payload-testing</a></td><td>Save, preview, and invalidation checks.</td></tr>
+        <tr><td><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/skills/payload-deploy-vercel/SKILL.md">payload-deploy-vercel</a></td><td>Vercel Hobby, Turso, migrations, and cron.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>More</h2>
+    <ul>
+      <li><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/docs/INSTALL.md">Install paths per agent</a></li>
+      <li><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/docs/ARCHITECTURE.md">Architecture</a></li>
+      <li><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/docs/ROADMAP.md">Roadmap</a></li>
+      <li><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/docs/VERSIONS.md">Pinned versions</a></li>
+      <li><a href="https://github.com/RamezHany/payload-cms-skills/blob/master/project-pack/index.html">Project pack</a> writes <code>PROJECT.md</code>, <code>AGENTS.md</code>, and the install command. Open that file from a clone. It does not upload anything.</li>
+    </ul>
+  </main>
+  <footer>
+    <p><a href="https://github.com/RamezHany/payload-cms-skills">RamezHany/payload-cms-skills</a>. MIT.</p>
+  </footer>
+</body>
+</html>

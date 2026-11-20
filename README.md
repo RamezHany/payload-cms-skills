@@ -4,6 +4,8 @@ Agent Skills that make coding agents build **Payload CMS 3 + Next.js** websites 
 
 The skills follow the open [Agent Skills](https://agentskills.io) format. They work in Cursor, Claude Code, Codex, OpenCode, Gemini CLI, and any other agent that reads `SKILL.md` files, regardless of which model runs them.
 
+Documentation, including the phase list, is published at <https://ramezhany.github.io/payload-cms-skills/>.
+
 ## Why this exists
 
 Generic agents building Payload sites tend to:
@@ -120,7 +122,7 @@ See [skills/payload-project-kickoff/references/model-roles.md](skills/payload-pr
 skills/            one folder per skill (SKILL.md + references/ + assets/)
 project-pack/      static brief form (no server)
 scripts/           validator, upstream check, and the library MCP server
-docs/              architecture, install, roadmap, versions
+docs/              GitHub Pages site (index.html) plus architecture, install, roadmap, versions
 .github/           CI workflows, issue and pull request templates
 versions.json      verified package versions
 ```
