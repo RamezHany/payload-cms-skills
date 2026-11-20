@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Payload project pack</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1c1915;
+      --muted: #5c564c;
+      --line: #d9d2c5;
+      --paper: #f6f1e7;
+      --card: #fffdf8;
+      --accent: #0f6e56;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.5 Georgia, "Iowan Old Style", Palatino, serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    main { max-width: 42rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+    h1 { font-size: 2rem; line-height: 1.15; margin: 0 0 0.5rem; }
+    h2 { font-size: 1.15rem; margin: 2rem 0 0.75rem; }
+    p.lead { color: var(--muted); margin-top: 0; }
+    form {
+      display: grid;
+      gap: 0.75rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 1.25rem;
+    }
+    label { display: grid; gap: 0.25rem; font-size: 0.95rem; }
+    label.row { grid-template-columns: 1.25rem 1fr; align-items: start; }
+    input, textarea, select {
+      font: inherit;
+      color: inherit;
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 0.45rem 0.55rem;
+    }
+    textarea { min-height: 7rem; resize: vertical; }
+    button, .ghost {
+      font: inherit;
+      cursor: pointer;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      padding: 0.55rem 0.8rem;
+    }
+    .ghost { background: transparent; color: var(--accent); }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    pre {
+      white-space: pre-wrap;
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 0.8rem;
+      overflow: auto;
+    }
+    .note { color: var(--muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Project pack</h1>
+    <p class="lead">Collects the brief and downloads PROJECT.md, AGENTS.md, and the skills install command. Nothing is uploaded.</p>
+    <form id="brief">
+      <h2>Client</h2>
+      <label>Name <input name="client" required></label>
+      <label>Website domain <input name="domain" placeholder="example.com"></label>
+      <label>Industry <input name="industry"></label>
+      <label>Contact for decisions <input name="contact"></label>
+      <h2>Brief</h2>
+      <label>What the site must do <textarea name="summary" required></textarea></label>
+      <label>Scenario
+        <select name="scenario">
+          <option value="A. New site">A. New site</option>
+          <option value="B. Backend for an existing frontend">B. Backend for an existing frontend</option>
+          <option value="C. Migrate to Next.js">C. Migrate to Next.js</option>
+          <option value="D. Feature or fix">D. Feature or fix</option>
+        </select>
+      </label>
+      <h2>Design</h2>
+      <label>Figma URL <input name="figma" placeholder="https://www.figma.com/design/..."></label>
+      <label>Brand colors <input name="colors" placeholder="#112233, #f4efe6"></label>
+      <label>Fonts <input name="fonts"></label>
+      <label class="row"><input type="checkbox" name="motion"> Motion, 3D, or a copied component</label>
+      <h2>Languages</h2>
+      <label>Content locales <input name="locales" value="en"></label>
+      <label>RTL locales <input name="rtl" value="none"></label>
+      <label>Admin languages <input name="adminLang" value="en"></label>
+      <h2>Features</h2>
+      <label class="row"><input type="checkbox" name="blog" checked> Blog with live preview</label>
+      <label class="row"><input type="checkbox" name="pages" checked> Pages builder with live preview</label>
+      <label class="row"><input type="checkbox" name="forms"> Contact or lead forms with simple CRM</label>
+      <label class="row"><input type="checkbox" name="booking"> Consultation booking</label>
+      <label class="row"><input type="checkbox" name="payments"> Online payments</label>
+      <label>Payment gateway <input name="gateway" placeholder="Kashier"></label>
+      <label class="row"><input type="checkbox" name="calendar"> Google Calendar sync</label>
+      <label class="row"><input type="checkbox" name="video"> Video</label>
+      <label class="row"><input type="checkbox" name="newsletter"> Newsletter</label>
+      <label class="row"><input type="checkbox" name="mcp"> MCP endpoint for the client</label>
+      <label class="row"><input type="checkbox" name="legal"> Legal pages and trust center</label>
+      <label class="row"><input type="checkbox" name="llms" checked> Summarize with AI and /llms.txt</label>
+      <div class="actions">
+        <button type="submit">Build the pack</button>
+        <button type="button" class="ghost" id="download">Download the three files</button>
+      </div>
+    </form>
+    <h2>Install command</h2>
+    <pre id="command">npx skills add RamezHany/payload-cms-skills</pre>
+    <p class="note">Put the downloaded PROJECT.md and AGENTS.md in the website repository root. Secrets stay out of both files.</p>
+    <h2>PROJECT.md preview</h2>
+    <pre id="preview"></pre>
+  </main>
+  <script>
+    const AGENTS = `# Agent instructions
+
+This is a Payload CMS 3 + Next.js website. Before any task:
+
+1. Load the \`payload-project-kickoff\` skill and follow it.
+2. Follow the \`agent-guardrails\` skill for the whole session.
+3. Read \`PROJECT.md\`. It holds the brief, the plan, decisions, and open questions.
+
+## Non-negotiable rules
+
+- Never start from scratch or re-scaffold. Extend the code that exists.
+- Never write throwaway scripts (Python, Node, shell) to search, patch, or explore. Use the editor's search and edit tools.
+- Never run commands outside this project folder.
+- Never print, commit, or log secrets. Use \`.env.example\` for variable names.
+- Stop after two failed attempts at the same fix. Record the blocker in \`PROJECT.md\` and change approach or move on.
+- Never push to \`main\` or \`master\`. Work on a feature branch.
+- Before saying a task is done, run the checks in the skill's "Done when" list and report the results.
+
+## Stack
+
+Next.js (App Router) + Payload 3.x + Tailwind CSS, libSQL / Turso, Vercel, Cloudinary or R2, Mux, Resend. TanStack Query for client data. React Hook Form + Zod for forms.
+
+## Commands
+
+- Dev server: \`pnpm dev\`
+- Types: \`pnpm generate:types\` after any collection or global change
+- Import map: \`pnpm generate:importmap\` after adding or moving admin components
+- Typecheck: \`pnpm tsc --noEmit\`
+- Lint: \`pnpm lint\`
+- Tests: \`pnpm test\`
+`
+
+    const form = document.querySelector('#brief')
+    const preview = document.querySelector('#preview')
+    const command = 'npx skills add RamezHany/payload-cms-skills'
+    let project = ''
+
+    const value = (name) => {
+      const field = form.elements[name]
+      return field ? String(field.value).trim() : ''
+    }
+    const on = (name) => form.elements[name].checked
+    const line = (text) => (text ? text : 'TBD')
+    const check = (flag, text) => `- [${flag ? 'x' : ' '}] ${text}`
+
+    function phases() {
+      const rows = []
+      if (value('figma')) {
+        rows.push('- [ ] Design handoff - skill: figma-handoff - Done when: every frame in the map has a route and the tokens are in the existing theme')
+      }
+      if (on('motion')) {
+        rows.push('- [ ] Creative frontend - skill: creative-frontend - Done when: each library and component is listed under Design with its license')
+      }
+      rows.push(
+        '- [ ] 1. Architecture - skill: project-architecture - Done when: the folders match the architecture skill',
+        '- [ ] 2. Bootstrap and data model - skill: payload-bootstrap - Done when: the app boots and the collections in the brief exist',
+        '- [ ] 3. Admin - skills: payload-auth-rbac, payload-admin-branding, payload-localization - Done when: roles, brand, and languages match the brief',
+        '- [ ] 4. Content - skills: payload-live-preview, payload-media, payload-seo-geo, payload-legal-trust - Done when: preview, media, SEO, and the legal pages the brief asked for work',
+        '- [ ] 5. Business flows - skills: payload-forms-crm, payload-bookings-payments, payload-integrations, payload-mcp - Done when: the checked business features work',
+        '- [ ] 6. Performance - skill: payload-performance - Done when: the invalidation map is filled and a traced save matches it',
+        '- [ ] 7. Testing - skill: payload-testing - Done when: the save and preview checks in that skill pass',
+        '- [ ] 8. Deploy - skill: payload-deploy-vercel - Done when: production is on Vercel and the env table is filled without secrets',
+      )
+      return rows.join('\n')
+    }
+
+    function build() {
+      const gateway = value('gateway')
+      project = `# PROJECT
+
+Single source of truth for this project. Agents read it at the start of every session and update it at the end.
+
+## Client
+
+- Name: ${line(value('client'))}
+- Website domain: ${line(value('domain'))}
+- Industry: ${line(value('industry'))}
+- Contact for decisions: ${line(value('contact'))}
+
+## Brief
+
+${line(value('summary'))}
+
+## Scenario
+
+${value('scenario')}
+
+## Design
+
+- Figma file: ${line(value('figma'))}
+- Brand colors (hex): ${line(value('colors'))}
+- Fonts: ${line(value('fonts'))}
+- Logo files: \`public/brand/\` (SVG preferred)
+- Approved animation and component libraries: ${on('motion') ? 'TBD until the creative-frontend skill records each license' : 'None requested'}
+
+## Languages
+
+- Content locales: ${line(value('locales'))}
+- RTL locales: ${line(value('rtl'))}
+- Admin languages: ${line(value('adminLang'))}
+
+## Features
+
+${check(on('blog'), 'Blog with live preview')}
+${check(on('pages'), 'Pages builder with live preview')}
+${check(on('forms'), 'Contact or lead forms with simple CRM')}
+${check(on('booking'), 'Consultation booking')}
+${check(on('payments'), 'Online payments (gateway: ' + (gateway || 'TBD') + ')')}
+${check(on('calendar'), 'Google Calendar sync')}
+${check(on('video'), 'Video (Mux / Vimeo / YouTube)')}
+${check(on('newsletter'), 'Newsletter')}
+${check(on('mcp'), 'MCP endpoint for the client')}
+${check(on('legal'), 'Legal pages (privacy, terms, cookies, refunds, copyright, do not sell, trust center)')}
+${check(on('llms'), 'Summarize with AI footer links and \`/llms.txt\`')}
+
+## Services and accounts
+
+Record which accounts exist. Never write secret values here; secrets go in \`.env.local\` and the hosting dashboard.
+
+| Service | Account owner | Status |
+| --- | --- | --- |
+| Vercel | TBD | TBD |
+| Turso | TBD | TBD |
+| Cloudinary or R2 | TBD | TBD |
+| Mux | TBD | TBD |
+| Resend or Mailgun | TBD | TBD |
+| Payment gateway | TBD | TBD |
+| Google Cloud (Calendar, Sheets, Drive) | TBD | TBD |
+| Google Search Console | TBD | TBD |
+
+## Phases
+
+Work one phase at a time. Skip a phase this brief does not need, and keep the order.
+
+${phases()}
+
+## Invalidation map
+
+One row per collection and global. Writes per save = paths revalidated x locales. Only a layout-rendered global may use the path cell \`layout\`. Trigger is \`publish\`, \`create\`, \`update\`, or \`any\`. Copy rows from the feature skills. The trace spec in the payload-testing skill reads this table.
+
+Locales: ${line(value('locales'))}
+
+| Collection or global | Trigger | Paths | Tags | Writes per save |
+| --- | --- | --- | --- | --- |
+
+ISR writes baseline after launch: TBD per day (Vercel Usage page).
+
+## Decisions
+
+## Questions
+
+## Blockers
+
+## Session log
+
+Newest entry first. Each entry: date, model, what was done, what is not done, next step.
+`
+      preview.textContent = project
+    }
+
+    function download(filename, text) {
+      const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      link.click()
+      URL.revokeObjectURL(url)
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault()
+      build()
+    })
+
+    document.querySelector('#download').addEventListener('click', () => {
+      if (!form.reportValidity()) return
+      build()
+      download('PROJECT.md', project)
+      download('AGENTS.md', AGENTS)
+      download('skills-install.txt', command + '\n')
+    })
+
+    build()
+  </script>
+</body>
+</html>

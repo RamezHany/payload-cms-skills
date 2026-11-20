@@ -3,7 +3,7 @@ name: payload-project-kickoff
 description: Entry point for every Payload CMS + Next.js website session. Use at the start of any task on a Payload project, when starting a new site from a brief or Figma link, when adding a backend to an existing frontend, or when unsure which skill applies. Loads guardrails, reads PROJECT.md, detects the scenario, writes a phased plan, and routes each phase to the right skill.
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Payload project kickoff
@@ -28,7 +28,7 @@ Read `package.json` and list the top-level folders. Do not install anything to d
 | Next.js app, no `payload` dependency | B. Backend for an existing frontend | `project-architecture` (refactor first), then `payload-bootstrap` |
 | Vite, Create React App, or Lovable export (no `next` dependency) | C. Migrate to Next.js, then add the backend | `project-architecture` (migration playbook) |
 | `payload` dependency present | D. Feature or fix | The feature skill from the routing table |
-| Brief includes a Figma link | Frontend from design | Implement design with Figma tools, then follow scenario A or B |
+| Brief includes a Figma link | Frontend from design | `figma-handoff`, then scenario A or B |
 
 Record the scenario in `PROJECT.md` under `## Scenario`.
 
@@ -44,7 +44,9 @@ Payload maintains an official skill that documents the full API (collections, fi
 
 ## Step 4: Write the phased plan
 
-Write the plan into `PROJECT.md` under `## Phases` as a checklist. Use only the phases the brief needs, in this order:
+Write the plan into `PROJECT.md` under `## Phases` as a checklist. Use only the phases the brief needs, in this order.
+
+When the brief has a Figma URL, add a Design handoff line before phase 1 (`figma-handoff`). When the design needs motion, 3D, or a copied component, add a Creative frontend line next (`creative-frontend`). The numbered phases stay in this order:
 
 1. Architecture: folder layout, refactor an existing frontend (`project-architecture`)
 2. Bootstrap and data model (`payload-bootstrap`)
@@ -63,6 +65,8 @@ Each phase line names its skill and a one-line "Done when". Work on one phase at
 | --- | --- |
 | New project, install Payload, data model | `payload-bootstrap` |
 | Folder layout, refactor, migrate from Vite or Lovable | `project-architecture` |
+| Figma file, frames, design handoff | `figma-handoff` |
+| GSAP, Lenis, Motion, 3D, Rive, or a copied free component | `creative-frontend` |
 | Admin colors, logo, sidebar, dashboard | `payload-admin-branding` |
 | Multiple languages, RTL, translated admin | `payload-localization` |
 | Live preview, drafts, preview button | `payload-live-preview` |

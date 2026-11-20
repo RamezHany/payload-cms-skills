@@ -37,6 +37,27 @@ Open the project and tell your agent:
 
 The kickoff skill loads the guardrails, detects the scenario (new site, backend for an existing frontend, feature, or fix), writes a phased plan into `PROJECT.md`, and routes each phase to the right skill.
 
+## Phases
+
+The kickoff skill writes these into `PROJECT.md` and works on one phase at a time. Skip a phase the brief does not need. Keep this order.
+
+A Figma URL adds a design handoff before phase 1. Motion, 3D, or a copied component adds the creative frontend step after that handoff and before bootstrap.
+
+| Phase | Work | Skills |
+| --- | --- | --- |
+| Design | Only when the brief has a Figma file | `figma-handoff` |
+| Creative | Only when the design needs motion, 3D, or a copied component | `creative-frontend` |
+| 1 | Folder layout, and a refactor when the frontend already exists | `project-architecture` |
+| 2 | App shell and data model | `payload-bootstrap` |
+| 3 | Roles, admin brand, languages | `payload-auth-rbac`, `payload-admin-branding`, `payload-localization` |
+| 4 | Preview, media, SEO, legal pages | `payload-live-preview`, `payload-media`, `payload-seo-geo`, `payload-legal-trust` |
+| 5 | Forms, bookings, integrations, client MCP | `payload-forms-crm`, `payload-bookings-payments`, `payload-integrations`, `payload-mcp` |
+| 6 | Cache cost and speed | `payload-performance` |
+| 7 | Save, preview, and invalidation checks | `payload-testing` |
+| 8 | Vercel, migrations, env, cron | `payload-deploy-vercel` |
+
+The same checklist is what the [project pack](project-pack/index.html) writes into `PROJECT.md`.
+
 ## Skills
 
 | Skill | Use it for |
@@ -44,6 +65,8 @@ The kickoff skill loads the guardrails, detects the scenario (new site, backend 
 | [payload-project-kickoff](skills/payload-project-kickoff/SKILL.md) | Entry point: reads the brief, detects the scenario, plans phases, routes to skills |
 | [agent-guardrails](skills/agent-guardrails/SKILL.md) | Hard rules for scope, shell use, loop breaking, secrets, and unattended runs |
 | [project-architecture](skills/project-architecture/SKILL.md) | Canonical folder layout, code conventions, refactor-first playbook for existing frontends |
+| [figma-handoff](skills/figma-handoff/SKILL.md) | Figma frames mapped onto locale routes, tokens in the existing theme |
+| [creative-frontend](skills/creative-frontend/SKILL.md) | Free motion, 3D, and copied components after a license check |
 | [payload-bootstrap](skills/payload-bootstrap/SKILL.md) | New project from the official template, or Payload added to an existing Next.js app |
 | [payload-admin-branding](skills/payload-admin-branding/SKILL.md) | Admin panel that matches the site brand with minimal, upgrade-safe CSS |
 | [payload-localization](skills/payload-localization/SKILL.md) | Content locales, RTL, admin language that follows the content locale, localized routes |
@@ -95,15 +118,41 @@ See [skills/payload-project-kickoff/references/model-roles.md](skills/payload-pr
 
 ```text
 skills/            one folder per skill (SKILL.md + references/ + assets/)
-scripts/           validator and upstream version check (no dependencies)
+project-pack/      static brief form (no server)
+scripts/           validator, upstream check, and the library MCP server
 docs/              architecture, install, roadmap, versions
 .github/           CI workflows, issue and pull request templates
 versions.json      verified package versions
 ```
 
+## Project pack
+
+Open [project-pack/index.html](project-pack/index.html) in a browser. It downloads `PROJECT.md`, `AGENTS.md`, and `skills-install.txt`. Nothing is uploaded. Details are in [project-pack/README.md](project-pack/README.md).
+
+## Library MCP
+
+This is a local stdio server for the skills in this repository. It is not the Payload MCP plugin inside a client website (`payload-mcp`).
+
+```bash
+node scripts/library-mcp.mjs
+```
+
+Point the editor at that command with the absolute path of this clone. The server speaks newline-delimited JSON-RPC (`2025-03-26` and `2024-11-05`) and exposes `list_skills`, `read_skill`, and `read_reference`. Confirm the config file path in the current editor docs before saving it.
+
+```json
+{
+  "mcpServers": {
+    "payload-cms-skills": {
+      "command": "node",
+      "args": ["<absolute-path-to-this-clone>/scripts/library-mcp.mjs"]
+    }
+  }
+}
+```
+
 ## Roadmap
 
-Figma design and handoff skills, creative frontend skills, and a static Project Pack generator are planned. See [docs/ROADMAP.md](docs/ROADMAP.md).
+Payload 4 waits until it is stable. See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Contributing
 

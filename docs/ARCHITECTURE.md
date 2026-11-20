@@ -37,7 +37,9 @@ flowchart TD
 
 `project-architecture` owns the folder layout. When the frontend was built elsewhere, that skill refactors to the standard layout with no visual change before any Payload work. `payload-bootstrap` then creates the project from the official website template, or adds Payload to the existing Next.js app. It does not scaffold a Payload app by hand.
 
-The kickoff skill keeps only the phases the brief needs, in this order:
+The kickoff skill keeps only the phases the brief needs, in this order. The same list is in the repository README.
+
+When the brief includes a Figma URL, Design handoff (`figma-handoff`) comes before phase 1. When the design needs motion, 3D, or a copied component, Creative frontend (`creative-frontend`) comes after handoff and before bootstrap.
 
 1. Architecture (`project-architecture`)
 2. Bootstrap and data model (`payload-bootstrap`)
