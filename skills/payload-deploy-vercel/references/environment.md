@@ -44,9 +44,13 @@ System variables Vercel provides (enable "System Environment Variables" if the p
 | `KASHIER_MERCHANT_ID`, `KASHIER_SECRET_KEY`, `KASHIER_API_KEY` | no | live, `KASHIER_MODE=live` | unset | `KASHIER_MODE=test` |
 | `FAWRY_MERCHANT_CODE`, `FAWRY_SECURE_KEY`, `FAWRY_MODE` | no | the mode string the provider file uses for `https://www.atfawry.com`. Development uses `sandbox` | unset | `sandbox` |
 | `TAP_SECRET_KEY` | no | live when Tap is enabled | unset | test key |
-| `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY` | no | One service account for Sheets, Drive, Search Console, and Workspace calendar | unset | local |
-| `GOOGLE_CALENDAR_OWNER_EMAIL`, `GOOGLE_CALENDAR_ID`, `GOOGLE_AUTH_MODE` | no | Calendar only. `workspace` uses the service account above. `oauth` uses the OAuth row | unset | local |
-| `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN` | no | only when calendar auth mode is OAuth | unset | local |
+| `GOOGLE_AUTH_MODE` | no | `service-account` or `oauth` for Sheets, Drive, and Search Console | unset | local |
+| `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY` | no | service-account credential. Leave empty when the mode is oauth | unset | local |
+| `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN` | no | oauth credential. Leave empty when the mode is service-account | unset | local |
+| `GOOGLE_CALENDAR_AUTH_MODE` | no | `service-account` or `oauth`, independent of `GOOGLE_AUTH_MODE` | unset | local |
+| `GOOGLE_CALENDAR_CLIENT_EMAIL`, `GOOGLE_CALENDAR_PRIVATE_KEY` | no | only when the calendar service account is a different key | unset | local |
+| `GOOGLE_CALENDAR_OAUTH_CLIENT_ID`, `GOOGLE_CALENDAR_OAUTH_CLIENT_SECRET`, `GOOGLE_CALENDAR_OAUTH_REFRESH_TOKEN` | no | only when the calendar OAuth user is not the Sheets user | unset | local |
+| `GOOGLE_CALENDAR_OWNER_EMAIL`, `GOOGLE_CALENDAR_ID` | no | delegation subject for service-account calendar, and the calendar id (`primary` is allowed) | unset | local |
 | `TURNSTILE_SECRET_KEY` | no | production secret | unset | a documented test secret |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | yes | production site key | production or test site key | documented test site key |
 

@@ -6,7 +6,7 @@ SQLite ids are numbers. Narrow a relationship with `typeof value === 'object'` b
 
 ## Services
 
-The `payload-bootstrap` skill sketches `services.price` as a major-unit number. Replace that field with `priceMinor` before any booking is created. Do not keep both.
+The `payload-bootstrap` skill defines `services.priceMinor` as integer minor units. If an existing collection still has major-unit `price`, replace that field with `priceMinor` before any booking is created. Do not keep both.
 
 ```ts
 { name: 'priceMinor', type: 'number', required: true, min: 0, admin: { description: 'Integer minor units. 150.00 EGP is 15000. 1.500 KWD is 1500.' } },
@@ -213,7 +213,6 @@ Add to `PROJECT.md`. Writes assume the locale count from `src/i18n/locales.ts`.
 | --- | --- | --- | --- | --- |
 | bookings | any | none | none | 0 |
 | payment-events | any | none | none | 0 |
-| booking-settings | update | /book | none | 1 x locales |
-| services | publish | existing service targets only | existing service tags | unchanged |
+| booking-settings | update | /<locale>/book | none | 1 x locales |
 
 `booking-settings` does not revalidate service pages. Those pages render `priceMinor` from the service document.

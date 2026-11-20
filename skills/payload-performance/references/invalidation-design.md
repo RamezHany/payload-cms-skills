@@ -339,21 +339,26 @@ Add this table to `PROJECT.md` and keep it current. Writes per save is the numbe
 ```markdown
 ## Invalidation map
 
-Locales: 2
+Locales: en, ar
 
-| Collection or global | Trigger | Paths (per locale) | Tags | Writes per save |
+| Collection or global | Trigger | Paths | Tags | Writes per save |
 | --- | --- | --- | --- | --- |
-| posts | publish, unpublish, rename, delete | /posts/<slug>, /posts, /posts/category/<c> (1-3), / if featured | posts:<slug>, collection:posts, posts-sitemap | (2 + categories + home?) x 2 = 6-10 |
-| pages | publish, unpublish, rename, delete | /<slug> (or / for home) | pages:<slug>, pages-sitemap | 1 x 2 = 2 |
-| legal-pages | publish, unpublish, rename, delete | /legal/<slug> | legal-pages:<slug> | 1 x 2 = 2 |
+| posts | publish | /<locale>/posts/<slug>, /<locale>/posts | posts:<slug>, collection:posts, posts-sitemap | 4 |
+| pages | publish | /<locale>/<slug> | pages:<slug>, pages-sitemap | 2 |
+| services | publish | /<locale>/services/<slug> | services:<slug>, services-sitemap | 2 |
+| legal-pages | publish | /<locale>/legal/<slug> | legal-pages:<slug>, legal-pages-sitemap | 2 |
 | media | create | none | none | 0 |
-| media | update | published posts referencing it (heroImage, meta.image) | via post targets | refs x 6-10 |
-| leads, bookings, payment-events | any | none (not public) | none | 0 |
-| header, footer | update | all routes (layout) | global_header / global_footer | all routes x 2 (rare, accepted) |
-| booking-settings | update | /book | none | 1 x 2 = 2 |
+| media | update | /<locale>/posts/trace-post, /<locale>/posts | posts:trace-post, collection:posts, posts-sitemap | 4 |
+| leads | any | none | none | 0 |
+| bookings | any | none | none | 0 |
+| payment-events | any | none | none | 0 |
+| header | update | layout | global_header | all routes x locales, rare, accepted |
+| footer | update | layout | global_footer | all routes x locales, rare, accepted |
 ```
 
-Review rule: if any ordinary content type (anything other than layout-rendered globals) shows "all routes", the design fails.
+One collection or global per row. Trigger is one word: `publish`, `create`, `update`, or `any`. Paths are `none`, `layout`, or comma-separated templates with `<locale>` and `<slug>`. The trace spec rejects combined triggers, parenthetical ranges, and the words "all routes" outside a `layout` cell.
+
+The posts row above is a post with no category and not featured on the home page. Add `/<locale>/posts/category/<slug>` only when the fixture has that category, and `/<locale>` only when it is featured. The media update fixture must reference the published post `trace-post` through `heroImage` or `meta.image`. A new upload stays on the create row. The `payload-seo-geo` skill appends `/llms.txt` to the public rows when that route exists. `layout` is only for a global the root layout renders, and the preferred hook is the global tag with zero `revalidatePath` calls.
 
 ## Tracing a save
 

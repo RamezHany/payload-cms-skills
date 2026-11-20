@@ -1,6 +1,6 @@
 ---
 name: payload-integrations
-description: Email, Google Sheets, Drive, and Search Console, plus Cloudflare Turnstile, for Payload CMS 3 sites on Vercel. Resend or Mailgun, a shared Google service account, formula-safe sheet appends, Drive uploads onto a Shared Drive, a small Search Console widget, and Turnstile siteverify. Use when sending email, appending leads to a spreadsheet, uploading to Drive, reading Search Console, or adding a captcha.
+description: Email, Google Sheets, Drive, and Search Console, plus Cloudflare Turnstile, for Payload CMS 3 sites on Vercel. Resend or Mailgun, Google auth by service account or OAuth, formula-safe sheet appends, Drive uploads, a small Search Console widget, and Turnstile siteverify. Use when sending email, appending leads to a spreadsheet, uploading to Drive, reading Search Console, or adding a captcha.
 license: MIT
 metadata:
   version: "1.0.0"
@@ -27,18 +27,29 @@ Copy SPF, DKIM, and DMARC from the provider's domain screen into the client's DN
 
 Send notifications from `after()` (imported from `next/server`) so a slow provider does not hold the visitor's response. Password reset uses the same adapter (the `payload-auth-rbac` skill).
 
-## Step 2: One Google service account
+## Step 2: Choose Google auth
 
-Sheets, Drive, and Search Console share one service account. Create the project in Google Cloud, enable the Google Sheets API, Google Drive API, and Google Search Console API, then create a JSON key. Delete the downloaded file after the values are in `.env`. Never commit it.
+Sheets, Drive, and Search Console share one mode. Calendar chooses its own mode in the `payload-bookings-payments` skill, because the calendar owner is often a different Google account. Record both choices in `PROJECT.md`.
 
-Store two variables, not a base64 blob of the whole JSON:
+| Mode | `GOOGLE_AUTH_MODE` | When |
+| --- | --- | --- |
+| Service account | `service-account` | The client has Google Workspace, or a Cloud project they can share with a robot user |
+| OAuth | `oauth` | A person owns the sheet, the Drive folder, or the Search Console property, and there is no Workspace |
+
+Enable the Google Sheets API, Google Drive API, and Google Search Console API on the Cloud project. For `service-account`, create a JSON key, copy `client_email` and `private_key`, then delete the downloaded file. For `oauth`, create an OAuth client and mint one refresh token offline with the scopes below. Do not build a consent screen in the website unless the client asks. Never commit either credential.
 
 ```bash
+GOOGLE_AUTH_MODE=service-account
 GOOGLE_CLIENT_EMAIL=
 GOOGLE_PRIVATE_KEY=
+GOOGLE_OAUTH_CLIENT_ID=
+GOOGLE_OAUTH_CLIENT_SECRET=
+GOOGLE_OAUTH_REFRESH_TOKEN=
 ```
 
-`GOOGLE_PRIVATE_KEY` is the `private_key` value on one line, with newline characters written as `\n`. Vercel's env store keeps that single line. The client replaces `\\n` with real newlines before `google-auth-library` reads it. A base64 blob hides a broken key until runtime and is easier to paste into a log by accident. Code: [references/google.md](references/google.md).
+Fill the pair that matches the mode. Leave the other pair empty. `GOOGLE_PRIVATE_KEY` is the `private_key` value on one line, with newline characters written as `\n`. Vercel's env store keeps that single line. The client replaces `\\n` with real newlines before `google-auth-library` reads it. A base64 blob hides a broken key until runtime and is easier to paste into a log by accident. Code: [references/google.md](references/google.md).
+
+A Cloud project whose consent screen is an external user type and whose publishing status is Testing issues a refresh token that expires in 7 days, unless the only scopes are name, email, and profile. These scopes are not in that set. While the app stays in Testing, an `oauth` connection dies every week. Publish the consent screen to Production before go-live, or use `service-account`. Warn the client in `PROJECT.md`.
 
 Request only the scopes the project uses:
 
@@ -51,7 +62,14 @@ Request only the scopes the project uses:
 
 `drive.file` does not see a folder a person created and then shared. The service account only reaches files shared with its email, so the broader Drive scope is the one that can upload into that folder.
 
-Share the spreadsheet with `GOOGLE_CLIENT_EMAIL` as Editor. In Search Console, add that same email as a user on the property (Settings, Users and permissions). Sitemap submit needs a user who can manage the property. The console labels that role Full. Read-only query access is a lower role. Confirm the current labels in the Search Console UI before saving. Use the role that can submit a sitemap when the same client also calls `sitemaps.submit`.
+Who must already have access depends on the mode:
+
+| Mode | Sheets | Drive | Search Console |
+| --- | --- | --- | --- |
+| `service-account` | Share the spreadsheet with `GOOGLE_CLIENT_EMAIL` as Editor | The service account is a member of the Shared Drive | Add that same email as a user on the property |
+| `oauth` | The Google user who minted the refresh token can edit the sheet | That user can write the folder | That user is already on the property |
+
+Sitemap submit needs a user who can manage the property. The console labels that role Full. Read-only query access is a lower role. Confirm the current labels in the Search Console UI before saving. Use the role that can submit a sitemap when the same client also calls `sitemaps.submit`. Do not invite a service account when the mode is `oauth`.
 
 ## Step 3: Sheets
 
@@ -63,7 +81,7 @@ Column order is in the Google reference. It matches the lead document and omits 
 
 ## Step 4: Drive
 
-Service accounts have no storage quota and cannot own files. Upload into a Shared Drive folder, with `supportsAllDrives: true` and that folder id in `parents`. A personal Gmail account cannot create a Shared Drive. If the client has no Google Workspace, stop and use Sheets for tabular data, or ask before switching the upload to a user OAuth client. Details: [references/google.md](references/google.md).
+`service-account` has no storage quota and cannot own files. That mode uploads into a Shared Drive folder (`supportsAllDrives: true`, folder id in `parents`). A personal Gmail account cannot create a Shared Drive, so use `oauth` for that client and upload into a folder that user can write. Details: [references/google.md](references/google.md).
 
 Source: https://developers.google.com/workspace/drive/api/guides/about-shareddrives
 
@@ -100,8 +118,12 @@ EMAIL_FROM_NAME=
 SMTP_HOST=
 SMTP_USER=
 SMTP_PASS=
+GOOGLE_AUTH_MODE=service-account
 GOOGLE_CLIENT_EMAIL=
 GOOGLE_PRIVATE_KEY=
+GOOGLE_OAUTH_CLIENT_ID=
+GOOGLE_OAUTH_CLIENT_SECRET=
+GOOGLE_OAUTH_REFRESH_TOKEN=
 GOOGLE_SHEETS_LEAD_ID=
 GOOGLE_DRIVE_FOLDER_ID=
 SEARCH_CONSOLE_SITE_URL=
@@ -115,8 +137,9 @@ Set Resend or SMTP, not both. `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is the only value
 
 - Which email provider, and the verified from-address.
 - DNS access for SPF, DKIM, and DMARC.
-- A Google Cloud project the client owns, the sheet share, and Search Console user access.
-- A Shared Drive folder before any Drive upload.
+- Which Google mode, `service-account` or `oauth`, and a Cloud project the client owns.
+- Sheet access and Search Console access for the account that mode uses.
+- A Shared Drive folder before a `service-account` Drive upload. An `oauth` upload needs a folder that user can write.
 - Production Turnstile keys. Do not ship the test secret.
 
 ## Diagnosis
@@ -125,10 +148,10 @@ Set Resend or SMTP, not both. `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is the only value
 | --- | --- | --- |
 | Mail accepted, never arrives | Domain not verified, or SPF has two TXT records | Step 1 |
 | `Invalid key` from Google | The private key still contains the two characters `\` and `n` | The newline split in the Google reference |
-| Sheets `403` | The sheet is not shared with the service account email | Step 2 |
-| Drive `storageQuotaExceeded` | Upload went to the service account's My Drive | Step 4 |
+| Sheets `403` | `service-account`: the sheet is not shared with the client email. `oauth`: the refresh-token user cannot edit the sheet | Step 2 |
+| Drive `storageQuotaExceeded` | A service account upload went to My Drive instead of a Shared Drive | Step 4 |
 | Turnstile always fails locally | Production secret with a test site key, or the reverse | Step 6 table |
-| Search Console `403` | The service account is not a user on that property | Step 2 |
+| Search Console `403` | `service-account`: that email is not a user on the property. `oauth`: the refresh-token user is not on the property | Step 2 |
 
 ## Done when
 

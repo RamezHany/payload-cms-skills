@@ -11,7 +11,7 @@ import 'server-only'
 
 import { Readable } from 'node:stream'
 
-import { JWT } from 'google-auth-library'
+import { JWT, OAuth2Client } from 'google-auth-library'
 import { drive } from '@googleapis/drive'
 import { searchconsole } from '@googleapis/searchconsole'
 import { sheets } from '@googleapis/sheets'
@@ -19,24 +19,103 @@ import { sheets } from '@googleapis/sheets'
 import { escapeSpreadsheetCell } from '@/utilities/escapeSpreadsheet'
 import { getPayloadClient } from '@/lib/payload'
 
-export function privateKey(): string {
-  const raw = process.env.GOOGLE_PRIVATE_KEY ?? ''
+type GoogleAuthMode = 'service-account' | 'oauth'
+
+function privateKeyFrom(name: 'GOOGLE_PRIVATE_KEY' | 'GOOGLE_CALENDAR_PRIVATE_KEY'): string {
+  const raw = process.env[name] ?? ''
   const unquoted = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw
   return unquoted.split('\\n').join('\n')
 }
 
-function googleJwt(scopes: string[]): JWT {
-  return new JWT({
-    email: process.env.GOOGLE_CLIENT_EMAIL,
-    key: privateKey(),
-    scopes,
-  })
+export function privateKey(): string {
+  return privateKeyFrom('GOOGLE_PRIVATE_KEY')
+}
+
+function firstEnv(calendar: boolean, overrideName: string, sharedName: string): string | undefined {
+  if (calendar && process.env[overrideName]) return process.env[overrideName]
+  return process.env[sharedName]
+}
+
+function readMode(calendar: boolean): GoogleAuthMode | null {
+  const selected = calendar
+    ? process.env.GOOGLE_CALENDAR_AUTH_MODE || process.env.GOOGLE_AUTH_MODE
+    : process.env.GOOGLE_AUTH_MODE
+  switch (selected) {
+    case 'service-account':
+    case 'oauth':
+      return selected
+    default:
+      return null
+  }
+}
+
+export function googleCredentialsReady(calendar = false): boolean {
+  const mode = readMode(calendar)
+  switch (mode) {
+    case 'oauth':
+      return Boolean(
+        firstEnv(calendar, 'GOOGLE_CALENDAR_OAUTH_CLIENT_ID', 'GOOGLE_OAUTH_CLIENT_ID') &&
+          firstEnv(calendar, 'GOOGLE_CALENDAR_OAUTH_CLIENT_SECRET', 'GOOGLE_OAUTH_CLIENT_SECRET') &&
+          firstEnv(calendar, 'GOOGLE_CALENDAR_OAUTH_REFRESH_TOKEN', 'GOOGLE_OAUTH_REFRESH_TOKEN'),
+      )
+    case 'service-account':
+      return Boolean(
+        firstEnv(calendar, 'GOOGLE_CALENDAR_CLIENT_EMAIL', 'GOOGLE_CLIENT_EMAIL') &&
+          (calendar && process.env.GOOGLE_CALENDAR_PRIVATE_KEY
+            ? process.env.GOOGLE_CALENDAR_PRIVATE_KEY
+            : process.env.GOOGLE_PRIVATE_KEY),
+      )
+    case null:
+      return false
+    default: {
+      const unhandled: never = mode
+      return unhandled
+    }
+  }
+}
+
+export function googleAuth(
+  scopes: string[],
+  options?: { calendar?: boolean; subject?: string },
+): JWT | OAuth2Client {
+  const calendar = options?.calendar === true
+  const mode = readMode(calendar)
+  switch (mode) {
+    case 'oauth': {
+      const auth = new OAuth2Client(
+        firstEnv(calendar, 'GOOGLE_CALENDAR_OAUTH_CLIENT_ID', 'GOOGLE_OAUTH_CLIENT_ID'),
+        firstEnv(calendar, 'GOOGLE_CALENDAR_OAUTH_CLIENT_SECRET', 'GOOGLE_OAUTH_CLIENT_SECRET'),
+      )
+      auth.setCredentials({
+        refresh_token: firstEnv(calendar, 'GOOGLE_CALENDAR_OAUTH_REFRESH_TOKEN', 'GOOGLE_OAUTH_REFRESH_TOKEN'),
+      })
+      return auth
+    }
+    case 'service-account':
+      return new JWT({
+        email: firstEnv(calendar, 'GOOGLE_CALENDAR_CLIENT_EMAIL', 'GOOGLE_CLIENT_EMAIL'),
+        key:
+          calendar && process.env.GOOGLE_CALENDAR_PRIVATE_KEY
+            ? privateKeyFrom('GOOGLE_CALENDAR_PRIVATE_KEY')
+            : privateKey(),
+        scopes,
+        subject: options?.subject,
+      })
+    case null:
+      throw new Error('Google auth mode must be service-account or oauth')
+    default: {
+      const unhandled: never = mode
+      throw new Error(`Unhandled Google auth mode: ${String(unhandled)}`)
+    }
+  }
 }
 ```
 
-`JWT` takes `email`, `key`, and `scopes` (`google-auth-library` 11.3.4). Do not pass `keyFile`. The key file is not on the server.
+`JWT` takes `email`, `key`, `scopes`, and an optional `subject` (`google-auth-library` 11.3.4). `OAuth2Client` takes the client id and secret, then `setCredentials({ refresh_token })`. Do not pass `keyFile`. The key file is not on the server.
 
-Do not log `privateKey()` or the client email together with a request. Log "Google credentials are missing" when either env var is empty, and return.
+Sheets, Drive, and Search Console call `googleAuth(scopes)`. Calendar calls `googleAuth(scopes, { calendar: true, subject })`. `subject` is the Workspace user to impersonate. The OAuth branch ignores it. A calendar override env var is used only when that calendar account is not the Sheets account. Leave the override empty to reuse the shared credential.
+
+Do not log `privateKey()` or a client email together with a request. When `googleCredentialsReady()` is false, log "Google credentials are missing" and return.
 
 ## Sheets
 
@@ -45,7 +124,7 @@ const SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
 
 export async function appendLeadRow(leadId: number | string): Promise<void> {
   const spreadsheetId = process.env.GOOGLE_SHEETS_LEAD_ID
-  if (!spreadsheetId || !process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) return
+  if (!spreadsheetId || !googleCredentialsReady()) return
 
   const payload = await getPayloadClient()
   const lead = await payload.findByID({ collection: 'leads', id: leadId, depth: 0, overrideAccess: true })
@@ -68,7 +147,7 @@ export async function appendLeadRow(leadId: number | string): Promise<void> {
     lead.status,
   ].map(escapeSpreadsheetCell)
 
-  const client = sheets({ version: 'v4', auth: googleJwt([SHEETS_SCOPE]) })
+  const client = sheets({ version: 'v4', auth: googleAuth([SHEETS_SCOPE]) })
   let lastError: unknown
   for (let attempt = 1; attempt <= 3; attempt += 1) {
     try {
@@ -104,7 +183,7 @@ export async function uploadToSharedDrive(filename: string, mimeType: string, bo
   const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID
   if (!folderId) return null
 
-  const client = drive({ version: 'v3', auth: googleJwt([DRIVE_SCOPE]) })
+  const client = drive({ version: 'v3', auth: googleAuth([DRIVE_SCOPE]) })
   const created = await client.files.create({
     supportsAllDrives: true,
     fields: 'id',
@@ -115,7 +194,7 @@ export async function uploadToSharedDrive(filename: string, mimeType: string, bo
 }
 ```
 
-`folderId` is a folder inside a Shared Drive, and the service account is a member of that drive (Contributor or Content manager). `supportsAllDrives: true` is required for shared drives (`drive.files.create` in `@googleapis/drive` 27.1.0). Uploading with no parent lands in the service account's My Drive, which has no quota and returns a storage error.
+In `service-account` mode, `folderId` is a folder inside a Shared Drive, and the service account is a member of that drive (Contributor or Content manager). `supportsAllDrives: true` is required for shared drives (`drive.files.create` in `@googleapis/drive` 27.1.0). Uploading with no parent lands in the service account's My Drive, which has no quota and returns a storage error. In `oauth` mode, `folderId` is any folder that user can write, including My Drive. Keep `supportsAllDrives: true` so a Shared Drive folder still works.
 
 Do not use this for images on the public site. Those use the `payload-media` skill. Drive here is for an export file or a lead attachment the client asked to archive.
 
@@ -134,7 +213,7 @@ export async function topQueries(): Promise<{ query: string; clicks: number; imp
   start.setUTCDate(start.getUTCDate() - 28)
   const day = (date: Date) => date.toISOString().slice(0, 10)
 
-  const client = searchconsole({ version: 'v1', auth: googleJwt([WEBMASTERS_SCOPE]) })
+  const client = searchconsole({ version: 'v1', auth: googleAuth([WEBMASTERS_SCOPE]) })
   const response = await client.searchanalytics.query({
     siteUrl,
     requestBody: {
@@ -156,14 +235,14 @@ export async function topQueries(): Promise<{ query: string; clicks: number; imp
 export async function submitSitemap(feedpath: string): Promise<void> {
   const siteUrl = process.env.SEARCH_CONSOLE_SITE_URL
   if (!siteUrl) return
-  const client = searchconsole({ version: 'v1', auth: googleJwt([WEBMASTERS_SCOPE]) })
+  const client = searchconsole({ version: 'v1', auth: googleAuth([WEBMASTERS_SCOPE]) })
   await client.sitemaps.submit({ siteUrl, feedpath })
 }
 ```
 
 `searchanalytics.query` and `sitemaps.submit` are the method names on `@googleapis/searchconsole` 11.0.1. `requestBody`, `siteUrl`, and `feedpath` match that package's types. `rowLimit` max is 25000; this widget asks for 10. Query dates are Pacific Time on Google's side; shifting the window back three days avoids an empty "today".
 
-Read-only widgets can use `https://www.googleapis.com/auth/webmasters.readonly` instead of `webmasters`. Sitemap submit requires `webmasters`. One JWT lists every scope that call needs. Do not reuse a Drive-scoped client for Search Console.
+Read-only widgets can use `https://www.googleapis.com/auth/webmasters.readonly` instead of `webmasters`. Sitemap submit requires `webmasters`. Pass only that call's scope to `googleAuth`. For `oauth`, the refresh token must have been minted with that same scope, or Google rejects the call. Do not reuse a Drive-scoped client for Search Console.
 
 Render `topQueries()` from a server component behind admin auth. Cache it with `unstable_cache` and a tag that is not shared with content queries, for example `search-console-widget`, and revalidate that tag on a timer (`revalidate: 86400`) rather than on every lead or post save. Do not call `revalidatePath` for this widget.
 

@@ -61,7 +61,7 @@ export const Services: CollectionConfig<'services'> = {
   admin: {
     group: 'Content',
     useAsTitle: 'title',
-    defaultColumns: ['title', 'price', 'durationMinutes', 'updatedAt'],
+    defaultColumns: ['title', 'priceMinor', 'durationMinutes', 'updatedAt'],
     livePreview: {
       url: ({ data, locale }) =>
         generatePreviewPath({ collection: 'services', slug: data?.slug, locale: locale?.code }),
@@ -70,8 +70,8 @@ export const Services: CollectionConfig<'services'> = {
   fields: [
     { name: 'title', type: 'text', required: true, localized: true },
     { name: 'description', type: 'textarea', localized: true },
-    { name: 'price', type: 'number', required: true, min: 0 },
-    { name: 'currency', type: 'select', required: true, defaultValue: 'EGP', options: ['EGP', 'USD', 'SAR', 'AED', 'KWD', 'EUR'] },
+    { name: 'priceMinor', type: 'number', required: true, min: 0, admin: { description: 'Integer minor units. 150.00 EGP is 15000. 1.500 KWD is 1500.' } },
+    { name: 'currency', type: 'select', required: true, defaultValue: 'EGP', options: ['EGP', 'USD', 'EUR', 'SAR', 'AED', 'QAR', 'KWD', 'BHD', 'OMR', 'JOD'] },
     { name: 'durationMinutes', type: 'number', required: true, defaultValue: 30, min: 15 },
     slugField(),
   ],

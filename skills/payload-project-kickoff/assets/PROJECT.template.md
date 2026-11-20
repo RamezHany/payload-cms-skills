@@ -68,11 +68,12 @@ Record which accounts exist. Never write secret values here; secrets go in `.env
 
 ## Invalidation map
 
-One row per collection and global with public routes. Writes per save = paths revalidated x locales. Only layout-rendered globals may regenerate all routes. See the `payload-performance` skill.
+One row per collection and global. Writes per save = paths revalidated x locales. Only a layout-rendered global may use the path cell `layout`. Trigger is `publish`, `create`, `update`, or `any`. Copy rows from the feature skills. Delete nothing that a feature added. The trace spec in the `payload-testing` skill reads this table.
 
-| Collection or global | Trigger | Paths (per locale) | Tags | Writes per save |
+Locales: en, ar
+
+| Collection or global | Trigger | Paths | Tags | Writes per save |
 | --- | --- | --- | --- | --- |
-| TBD | TBD | TBD | TBD | TBD |
 
 ISR writes baseline after launch: TBD per day (Vercel Usage page).
 

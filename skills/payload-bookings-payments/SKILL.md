@@ -33,7 +33,7 @@ Enable only providers the client has credentials for. One default provider on th
 
 Follow [references/booking-model.md](references/booking-model.md). Summary:
 
-1. On `services` (created in the `payload-bootstrap` skill), replace major-unit `price` with integer `priceMinor`, and keep `currency` and `durationMinutes`.
+1. On `services`, keep `priceMinor` from the `payload-bootstrap` skill. If an existing collection still has major-unit `price`, replace it with `priceMinor` and do not keep both. Keep `currency` and `durationMinutes`.
 2. Add global `booking-settings`: IANA timezone, weekly hours, slot length, buffer, minimum lead time, max days ahead, blackout dates, default currency, enabled providers, hold minutes, calendar resource id.
 3. Add collection `bookings` with `slotKey` (unique), status union, `publicToken`, money fields, and provider fields.
 4. Add collection `payment-events` with unique `providerEventId`. Store ids, amount, currency, and outcome only.
@@ -105,14 +105,13 @@ export const revalidateBookingSettings: GlobalAfterChangeHook = ({ doc, req }) =
 }
 ```
 
-Copy these rows into the `PROJECT.md` invalidation map (two locales shown):
+Copy these rows into the `PROJECT.md` invalidation map. Do not add a second `services` row. A price change already rides that collection's publish row. Paths use `<locale>` so the trace spec can expand them. Two locales are shown in the writes column.
 
 | Collection or global | Trigger | Paths (per locale) | Tags | Writes per save |
 | --- | --- | --- | --- | --- |
 | bookings | any | none | none | 0 |
 | payment-events | any | none | none | 0 |
-| booking-settings | update | /book | none | 1 x locales |
-| services | publish of a price or content change | the service page only, via its existing targets | the service's existing tags | unchanged from the service row |
+| booking-settings | update | /<locale>/book | none | 1 x locales |
 
 Batch seed writes pass `context: { disableRevalidate: true }`.
 
@@ -142,15 +141,23 @@ PAYPAL_CLIENT_SECRET=
 PAYPAL_WEBHOOK_ID=
 PAYPAL_MODE=sandbox
 TAP_SECRET_KEY=
-GOOGLE_AUTH_MODE=
+GOOGLE_AUTH_MODE=service-account
+GOOGLE_CALENDAR_AUTH_MODE=oauth
 GOOGLE_OAUTH_CLIENT_ID=
 GOOGLE_OAUTH_CLIENT_SECRET=
 GOOGLE_OAUTH_REFRESH_TOKEN=
+GOOGLE_CALENDAR_OAUTH_CLIENT_ID=
+GOOGLE_CALENDAR_OAUTH_CLIENT_SECRET=
+GOOGLE_CALENDAR_OAUTH_REFRESH_TOKEN=
+GOOGLE_CLIENT_EMAIL=
+GOOGLE_PRIVATE_KEY=
+GOOGLE_CALENDAR_CLIENT_EMAIL=
+GOOGLE_CALENDAR_PRIVATE_KEY=
 GOOGLE_CALENDAR_OWNER_EMAIL=
 GOOGLE_CALENDAR_ID=
 ```
 
-`PAYMOB_INTEGRATION_IDS` is a comma-separated list of integration ids whose mode matches the secret key. `GOOGLE_AUTH_MODE` is `oauth` or `workspace`. Workspace calendar auth uses `GOOGLE_CLIENT_EMAIL` and `GOOGLE_PRIVATE_KEY` from the `payload-integrations` skill. Do not add a second pair for the same service account.
+`PAYMOB_INTEGRATION_IDS` is a comma-separated list of integration ids whose mode matches the secret key. `GOOGLE_AUTH_MODE` is `service-account` or `oauth` for Sheets, Drive, and Search Console. `GOOGLE_CALENDAR_AUTH_MODE` is the same pair of values and is independent: a site can use a service account for the sheet and OAuth for a personal calendar, or the other way around. Fill only the credential pair for the mode you chose. Calendar override variables stay empty when calendar uses the same account as Sheets. `GOOGLE_CLIENT_EMAIL` and `GOOGLE_PRIVATE_KEY` are the same names as in the `payload-integrations` skill.
 
 ## Stop and ask
 
@@ -185,5 +192,5 @@ Stop and write the question under `## Questions` in `PROJECT.md` when any of the
 - [ ] After `holdExpiresAt`, that slot is offered again before the cron runs
 - [ ] The return page reaches `confirmed` only after the webhook, not from gateway query parameters
 - [ ] A sandbox payment completes for each enabled provider
-- [ ] Saving `booking-settings` logs `revalidate (booking-settings)` with only the `/book` paths
+- [ ] Saving `booking-settings` logs `revalidate (booking-settings)` with only the localized `/book` paths
 - [ ] Saving a booking or a payment event logs no `revalidate` line

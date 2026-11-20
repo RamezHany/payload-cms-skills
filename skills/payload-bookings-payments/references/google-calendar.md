@@ -6,43 +6,27 @@ Ask which row applies before writing credentials. A personal Gmail account and a
 
 ## Auth
 
-| Account | Choice | Why |
+Calendar picks its own mode. It does not have to match Sheets. If `GOOGLE_CALENDAR_AUTH_MODE` is empty, the helper uses `GOOGLE_AUTH_MODE`.
+
+| Account | `GOOGLE_CALENDAR_AUTH_MODE` | Credential |
 | --- | --- | --- |
-| Personal Gmail | OAuth client plus a refresh token, `GOOGLE_AUTH_MODE=oauth` | The consultant owns the calendar |
-| Google Workspace | Service account with domain-wide delegation, `subject` set to the calendar owner, `GOOGLE_AUTH_MODE=workspace` | The owner is a user in the domain |
+| Personal Gmail | `oauth` | Refresh token for the consultant. Use `GOOGLE_CALENDAR_OAUTH_*` when that person is not the Sheets user. Otherwise leave those empty and the helper reuses `GOOGLE_OAUTH_*` |
+| Workspace user | `service-account` | Domain-wide delegation, `subject` set to the calendar owner. Use `GOOGLE_CALENDAR_CLIENT_EMAIL` and `GOOGLE_CALENDAR_PRIVATE_KEY` only when this is a different key from Sheets. Otherwise the helper reuses `GOOGLE_CLIENT_EMAIL` and `GOOGLE_PRIVATE_KEY` |
 
 Scope for both: `https://www.googleapis.com/auth/calendar`.
 
-### OAuth (personal Gmail)
+`googleAuth` lives in `src/lib/google.ts` (`payload-integrations` reference). Call it from that same file. Do not import the file from itself.
 
 ```ts
-import { OAuth2Client } from 'google-auth-library'
-
-const auth = new OAuth2Client(
-  process.env.GOOGLE_OAUTH_CLIENT_ID,
-  process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-)
-auth.setCredentials({ refresh_token: process.env.GOOGLE_OAUTH_REFRESH_TOKEN })
-```
-
-The refresh token is produced once, outside this skill, with offline access and that scope, and stored in `.env`. Do not build an interactive consent UI unless the client asks.
-
-Google's OAuth documentation: a Cloud project whose consent screen is an external user type and whose publishing status is Testing issues a refresh token that expires in 7 days, unless the only scopes are name, email, and profile. The calendar scope is not in that set. While the app stays in Testing, the calendar connection dies every week. Publish the consent screen to Production before go-live, or use the Workspace row. Warn the client in `PROJECT.md`.
-
-### Workspace service account
-
-Use the same `GOOGLE_CLIENT_EMAIL` and `GOOGLE_PRIVATE_KEY` as Sheets and Drive (`payload-integrations`). One service account, one key. `privateKey()` lives in `src/lib/google.ts` and turns the stored `\n` sequences into newlines.
-
-Add this in `src/lib/google.ts`, beside `privateKey()`. Do not import this file from itself.
-
-```ts
-const auth = new JWT({
-  email: process.env.GOOGLE_CLIENT_EMAIL,
-  key: privateKey(),
-  scopes: ['https://www.googleapis.com/auth/calendar'],
+const auth = googleAuth(['https://www.googleapis.com/auth/calendar'], {
+  calendar: true,
   subject: process.env.GOOGLE_CALENDAR_OWNER_EMAIL,
 })
 ```
+
+`subject` is sent only on the service-account branch. OAuth ignores it.
+
+The refresh token is produced once, outside this skill, with offline access and that scope, and stored in `.env`. Do not build an interactive consent UI unless the client asks. A Testing consent screen expires that token in 7 days. The warning and the fix are in the `payload-integrations` skill. If this project has no integrations skill yet, copy `googleAuth` from that reference before adding the calendar client.
 
 A Workspace admin must authorize the service account's client id for the calendar scope (domain-wide delegation). `subject` is the mailbox that owns the calendar.
 
