@@ -1,0 +1,43 @@
+name: Skill bug
+description: An agent followed a skill and produced broken or wrong code.
+title: "Skill bug: <skill-name> - <short summary>"
+body:
+  - type: input
+    id: skill
+    attributes:
+      label: Skill
+      description: Folder name under skills/
+      placeholder: payload-live-preview
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Model and tool
+      placeholder: Gemini in Cursor, DeepSeek in OpenCode
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: payload and next versions from the project's package.json
+      placeholder: payload 3.94.0, next 16.4.6
+  - type: textarea
+    id: step
+    attributes:
+      label: Step that failed
+      description: Quote the instruction the agent followed.
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Error output
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened

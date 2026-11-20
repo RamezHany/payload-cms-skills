@@ -1,0 +1,23 @@
+name: Skill request
+description: Propose a new skill or a change to an existing one.
+title: "Skill request: <short summary>"
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What do agents get wrong today, or what flow is missing?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Steps, packages, and docs the skill should use. Link official documentation.
+    validations:
+      required: true
+  - type: textarea
+    id: limits
+    attributes:
+      label: Free tier and hosting limits
+      description: Any plan limits that affect the design (Vercel Hobby, service quotas).
