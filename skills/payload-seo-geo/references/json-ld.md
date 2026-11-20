@@ -50,6 +50,72 @@ Read the posts collection for the author field the template already has, and pas
 
 Organization `@id` is `${siteUrl}/#organization`. WebSite `@id` is `${siteUrl}/#website`. Other nodes point `publisher` or `provider` at the organization `@id`.
 
+The locale layout renders both nodes in one `JsonLd`, so the page has one `application/ld+json` script with `@graph`. Values come from the `site-settings` global the admin edits. Do not hardcode a name, a logo URL, or a social profile.
+
+```ts
+import { z } from 'zod'
+
+import { absoluteMediaUrl } from '@/utilities/generateMeta'
+import { locales } from '@/i18n/locales'
+
+type SocialProfile = { url?: string | null }
+type MediaUpload = { url?: string | null }
+
+type SiteSettingsJsonLd = {
+  siteName?: string | null
+  siteDescription?: string | null
+  legalName?: string | null
+  logo?: MediaUpload | string | null
+  socialProfiles?: SocialProfile[] | null
+}
+
+export function organizationNode(settings: SiteSettingsJsonLd, siteUrl: string) {
+  const name = settings.legalName || settings.siteName
+  if (!name || !siteUrl) return null
+
+  const sameAs = (settings.socialProfiles ?? [])
+    .map((profile) => profile.url ?? '')
+    .filter((url) => z.url().safeParse(url).success)
+
+  const rawLogo = settings.logo && typeof settings.logo === 'object' ? settings.logo.url : undefined
+  const logo = rawLogo ? absoluteMediaUrl(rawLogo, siteUrl) : undefined
+
+  return {
+    '@type': 'Organization',
+    '@id': `${siteUrl}/#organization`,
+    name,
+    url: siteUrl,
+    ...(settings.siteDescription ? { description: settings.siteDescription } : {}),
+    ...(logo ? { logo } : {}),
+    ...(sameAs.length > 0 ? { sameAs } : {}),
+  }
+}
+
+export function websiteNode(settings: SiteSettingsJsonLd, siteUrl: string) {
+  if (!settings.siteName || !siteUrl) return null
+  return {
+    '@type': 'WebSite',
+    '@id': `${siteUrl}/#website`,
+    name: settings.siteName,
+    url: siteUrl,
+    ...(settings.siteDescription ? { description: settings.siteDescription } : {}),
+    inLanguage: [...locales],
+    publisher: { '@id': `${siteUrl}/#organization` },
+  }
+}
+```
+
+In `src/app/(frontend)/[locale]/layout.tsx`, after `getSiteSettings(locale)`:
+
+```tsx
+const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? ''
+const graph = [organizationNode(settings, siteUrl), websiteNode(settings, siteUrl)].filter((node) => node !== null)
+```
+
+Render `<JsonLd data={graph} />` only when `graph.length > 0`. `getSiteSettings` uses `depth: 1`, so `logo` is the media document. If it is still an id, omit `logo` instead of guessing a path.
+
+`absoluteMediaUrl` is the helper in the metadata reference. A Cloudinary or R2 URL is already absolute. Do not prefix the site host onto it.
+
 Organization fields, when present: `name` (`legalName` or `siteName`), `url`, `description`, `logo` (absolute), `email`, `telephone`, `sameAs` (the social profile URLs only).
 
 LocalBusiness adds `@type: 'LocalBusiness'` and `address` with `@type: 'PostalAddress'` and the address fields. Do not invent `openingHours`, `geo`, `priceRange`, or a more specific subtype (`Dentist`, `Restaurant`) unless `PROJECT.md` names it.

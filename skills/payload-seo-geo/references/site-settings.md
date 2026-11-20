@@ -18,18 +18,23 @@ export const SiteSettings: GlobalConfig = {
   },
   admin: {
     group: 'Settings',
+    description: 'An admin or editor edits these. Site name, logo, and social URLs are the JSON-LD WebSite and Organization nodes.',
   },
   hooks: {
     afterChange: [revalidateSiteSettings],
   },
   fields: [
-    { name: 'siteName', type: 'text', required: true, localized: true },
+    { name: 'siteName', type: 'text', required: true, localized: true, admin: { description: 'WebSite name, and the Organization name when Legal name is empty.' } },
     { name: 'siteDescription', type: 'textarea', required: true, localized: true },
-    { name: 'logo', type: 'upload', relationTo: 'media' },
+    { name: 'logo', type: 'upload', relationTo: 'media', admin: { description: 'Organization logo. The public page emits an absolute URL. Leave empty to omit logo.' } },
     { name: 'defaultOgImage', type: 'upload', relationTo: 'media' },
     {
       name: 'socialProfiles',
       type: 'array',
+      labels: { singular: 'Social profile', plural: 'Social profiles' },
+      admin: {
+        description: 'Each https URL becomes a sameAs entry. Facebook, LinkedIn, and Instagram are the usual three. Leave the list empty until the client pastes real profiles. Do not invent URLs.',
+      },
       fields: [
         {
           name: 'platform',
@@ -37,7 +42,21 @@ export const SiteSettings: GlobalConfig = {
           required: true,
           options: ['facebook', 'instagram', 'linkedin', 'x', 'youtube', 'tiktok', 'snapchat', 'whatsapp'],
         },
-        { name: 'url', type: 'text', required: true },
+        {
+          name: 'url',
+          type: 'text',
+          required: true,
+          validate: (value: unknown) => {
+            if (typeof value !== 'string') return 'Enter a full https URL'
+            try {
+              const parsed = new URL(value)
+              if (parsed.protocol !== 'https:') return 'Enter a full https URL'
+              return true
+            } catch {
+              return 'Enter a full https URL'
+            }
+          },
+        },
       ],
     },
     { name: 'contactEmail', type: 'email' },
