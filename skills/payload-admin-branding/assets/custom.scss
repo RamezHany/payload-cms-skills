@@ -1,0 +1,58 @@
+// Payload admin brand layer. Payload 3 styles live in the `payload-default` cascade layer,
+// so these unlayered rules take precedence without !important.
+
+@font-face {
+  font-family: 'Brand Sans';
+  src: url('/fonts/brand-sans-variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  // Brand values: replace with the values in PROJECT.md.
+  --brand-accent: #0f766e;
+  --brand-accent-hover: #115e59;
+  --brand-accent-contrast: #ffffff;
+  --brand-nav-bg: #0b1f1d;
+  --brand-nav-text: #e6f4f1;
+  --brand-nav-muted: #9cc5bd;
+
+  // Payload 3 variables.
+  --font-body: 'Brand Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --style-radius-s: 6px;
+  --style-radius-m: 10px;
+  --style-radius-l: 16px;
+}
+
+// Sidebar: documented nav classes only.
+.nav {
+  background-color: var(--brand-nav-bg);
+  color: var(--brand-nav-text);
+  border-inline-end: 1px solid color-mix(in srgb, var(--brand-nav-text) 12%, transparent);
+}
+
+.nav__link {
+  color: var(--brand-nav-muted);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--brand-nav-text);
+  }
+}
+
+.nav__link-indicator {
+  background-color: var(--brand-accent);
+}
+
+.nav__controls {
+  color: var(--brand-nav-text);
+}
+
+// Primary buttons read these variables; disabled buttons keep Payload's colors.
+.btn--style-primary:not(.btn--disabled) {
+  --bg-color: var(--brand-accent);
+  --color: var(--brand-accent-contrast);
+  --hover-bg: var(--brand-accent-hover);
+  --hover-color: var(--brand-accent-contrast);
+}
