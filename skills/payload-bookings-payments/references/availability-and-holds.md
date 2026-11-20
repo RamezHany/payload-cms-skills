@@ -178,17 +178,62 @@ Final statuses are `confirmed`, `expired`, `cancelled`, `needs_refund`, and `ref
 Hobby cron jobs run at most once per day, at any time inside that hour. A more frequent expression fails deployment. If the project has migrated to Vercel Schedules, keep one daily path schedule with `requestMethod: "GET"` and the same check. Do not schedule this cleanup more often than daily on Hobby.
 
 ```ts
-export async function GET(request: Request) {
+import { timingSafeEqualString } from '@/features/payments/verify'
+import { expireStaleHolds } from '@/features/booking/server/expire-holds'
+
+export const maxDuration = 60
+
+export async function GET(request: Request): Promise<Response> {
   const expected = process.env.CRON_SECRET
   const header = request.headers.get('authorization') ?? ''
   if (!expected || !timingSafeEqualString(header, `Bearer ${expected}`)) {
     return new Response('Unauthorized', { status: 401 })
   }
-  // Find pending_payment with holdExpiresAt < now, limit 100.
-  // For each, compare-and-set status to expired and slotKey to expired:${id}.
-  // context: { disableRevalidate: true }. No emails.
-  return Response.json({ ok: true })
+  const expired = await expireStaleHolds()
+  return Response.json({ ok: true, expired })
 }
 ```
 
-`timingSafeEqualString` is in the provider reference. A missing `CRON_SECRET` returns 401.
+`expireStaleHolds` is in `src/features/booking/server/expire-holds.ts`. A missing `CRON_SECRET` returns 401. The query is safe to run twice.
+
+```ts
+import 'server-only'
+
+import { getPayloadClient } from '@/lib/payload'
+
+export async function expireStaleHolds(): Promise<number> {
+  const payload = await getPayloadClient()
+  const now = new Date().toISOString()
+  const stale = await payload.find({
+    collection: 'bookings',
+    where: {
+      and: [
+        { status: { equals: 'pending_payment' } },
+        { holdExpiresAt: { less_than: now } },
+      ],
+    },
+    depth: 0,
+    limit: 100,
+    pagination: false,
+  })
+
+  let expired = 0
+  for (const booking of stale.docs) {
+    const updated = await payload.update({
+      collection: 'bookings',
+      where: {
+        and: [
+          { id: { equals: booking.id } },
+          { status: { equals: 'pending_payment' } },
+          { holdExpiresAt: { less_than: now } },
+        ],
+      },
+      data: { status: 'expired', slotKey: `expired:${booking.id}` },
+      depth: 0,
+      context: { disableRevalidate: true },
+    })
+    if (updated.docs.length === 1) expired += 1
+  }
+  return expired
+}
+```

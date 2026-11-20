@@ -146,13 +146,11 @@ GOOGLE_AUTH_MODE=
 GOOGLE_OAUTH_CLIENT_ID=
 GOOGLE_OAUTH_CLIENT_SECRET=
 GOOGLE_OAUTH_REFRESH_TOKEN=
-GOOGLE_SERVICE_ACCOUNT_EMAIL=
-GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=
 GOOGLE_CALENDAR_OWNER_EMAIL=
 GOOGLE_CALENDAR_ID=
 ```
 
-`PAYMOB_INTEGRATION_IDS` is a comma-separated list of integration ids whose mode matches the secret key. `GOOGLE_AUTH_MODE` is `oauth` or `workspace`.
+`PAYMOB_INTEGRATION_IDS` is a comma-separated list of integration ids whose mode matches the secret key. `GOOGLE_AUTH_MODE` is `oauth` or `workspace`. Workspace calendar auth uses `GOOGLE_CLIENT_EMAIL` and `GOOGLE_PRIVATE_KEY` from the `payload-integrations` skill. Do not add a second pair for the same service account.
 
 ## Stop and ask
 

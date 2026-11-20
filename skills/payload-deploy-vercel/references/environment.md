@@ -44,8 +44,8 @@ System variables Vercel provides (enable "System Environment Variables" if the p
 | `KASHIER_MERCHANT_ID`, `KASHIER_SECRET_KEY`, `KASHIER_API_KEY` | no | live, `KASHIER_MODE=live` | unset | `KASHIER_MODE=test` |
 | `FAWRY_MERCHANT_CODE`, `FAWRY_SECURE_KEY`, `FAWRY_MODE` | no | the mode string the provider file uses for `https://www.atfawry.com`. Development uses `sandbox` | unset | `sandbox` |
 | `TAP_SECRET_KEY` | no | live when Tap is enabled | unset | test key |
-| `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY` | no | Sheets and Drive, from the integrations feature | unset | local |
-| `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`, `GOOGLE_CALENDAR_OWNER_EMAIL`, `GOOGLE_CALENDAR_ID` | no | calendar, from the bookings feature. Not the same names as the Sheets pair | unset | local |
+| `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY` | no | One service account for Sheets, Drive, Search Console, and Workspace calendar | unset | local |
+| `GOOGLE_CALENDAR_OWNER_EMAIL`, `GOOGLE_CALENDAR_ID`, `GOOGLE_AUTH_MODE` | no | Calendar only. `workspace` uses the service account above. `oauth` uses the OAuth row | unset | local |
 | `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN` | no | only when calendar auth mode is OAuth | unset | local |
 | `TURNSTILE_SECRET_KEY` | no | production secret | unset | a documented test secret |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | yes | production site key | production or test site key | documented test site key |

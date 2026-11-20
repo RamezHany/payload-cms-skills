@@ -31,12 +31,14 @@ Google's OAuth documentation: a Cloud project whose consent screen is an externa
 
 ### Workspace service account
 
-```ts
-import { JWT } from 'google-auth-library'
+Use the same `GOOGLE_CLIENT_EMAIL` and `GOOGLE_PRIVATE_KEY` as Sheets and Drive (`payload-integrations`). One service account, one key. `privateKey()` lives in `src/lib/google.ts` and turns the stored `\n` sequences into newlines.
 
+Add this in `src/lib/google.ts`, beside `privateKey()`. Do not import this file from itself.
+
+```ts
 const auth = new JWT({
-  email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-  key: (process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY || '').split('\\n').join('\n'),
+  email: process.env.GOOGLE_CLIENT_EMAIL,
+  key: privateKey(),
   scopes: ['https://www.googleapis.com/auth/calendar'],
   subject: process.env.GOOGLE_CALENDAR_OWNER_EMAIL,
 })

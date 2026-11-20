@@ -19,7 +19,7 @@ import { sheets } from '@googleapis/sheets'
 import { escapeSpreadsheetCell } from '@/utilities/escapeSpreadsheet'
 import { getPayloadClient } from '@/lib/payload'
 
-function privateKey(): string {
+export function privateKey(): string {
   const raw = process.env.GOOGLE_PRIVATE_KEY ?? ''
   const unquoted = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw
   return unquoted.split('\\n').join('\n')
