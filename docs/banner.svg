@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320">
+  <rect width="1280" height="320" fill="#f6f1e7"/>
+  <rect x="8" y="8" width="1264" height="304" fill="none" stroke="#d9d2c5" stroke-width="2"/>
+  <rect x="8" y="8" width="1264" height="6" fill="#0f6e56"/>
+
+  <!-- decorative dot grid, top right -->
+  <g fill="#0f6e56" opacity="0.32">
+    <circle cx="1052" cy="52" r="3.5"/><circle cx="1086" cy="52" r="3.5"/><circle cx="1120" cy="52" r="3.5"/><circle cx="1154" cy="52" r="3.5"/><circle cx="1188" cy="52" r="3.5"/>
+    <circle cx="1052" cy="82" r="3.5"/><circle cx="1086" cy="82" r="3.5"/><circle cx="1120" cy="82" r="3.5"/><circle cx="1154" cy="82" r="3.5"/><circle cx="1188" cy="82" r="3.5"/>
+    <circle cx="1052" cy="112" r="3.5"/><circle cx="1086" cy="112" r="3.5"/><circle cx="1120" cy="112" r="3.5"/><circle cx="1154" cy="112" r="3.5"/><circle cx="1188" cy="112" r="3.5"/>
+  </g>
+
+  <!-- eyebrow -->
+  <text x="72" y="94" font-family="Consolas, 'Courier New', monospace" font-size="17" font-weight="bold" letter-spacing="4" fill="#0f6e56">AGENT SKILLS · OPEN SKILL.MD FORMAT</text>
+
+  <!-- title -->
+  <text x="70" y="162" font-family="Georgia, 'Iowan Old Style', Palatino, serif" font-size="66" font-weight="bold" fill="#1c1915">Payload CMS Skills</text>
+
+  <!-- tagline -->
+  <text x="72" y="204" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" fill="#5c564c">Make coding agents build Payload CMS 3 + Next.js websites the same way — every time.</text>
+
+  <!-- install command pill -->
+  <rect x="72" y="234" width="566" height="44" rx="8" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
+  <text x="92" y="262" font-family="Consolas, 'Courier New', monospace" font-size="16.5" fill="#1c1915">$ npx skills add RamezHany/payload-cms-skills</text>
+
+  <!-- tech chips -->
+  <g font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#5c564c">
+    <rect x="664" y="234" width="92" height="44" rx="22" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
+    <text x="710" y="262" text-anchor="middle">Payload 3</text>
+    <rect x="766" y="234" width="80" height="44" rx="22" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
+    <text x="806" y="262" text-anchor="middle">Next.js</text>
+    <rect x="856" y="234" width="102" height="44" rx="22" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
+    <text x="907" y="262" text-anchor="middle">TypeScript</text>
+    <rect x="968" y="234" width="66" height="44" rx="22" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
+    <text x="1001" y="262" text-anchor="middle">Turso</text>
+    <rect x="1044" y="234" width="74" height="44" rx="22" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
+    <text x="1081" y="262" text-anchor="middle">Vercel</text>
+    <rect x="1128" y="234" width="58" height="44" rx="22" fill="#fffdf8" stroke="#d9d2c5" stroke-width="1.5"/>
+    <text x="1157" y="262" text-anchor="middle">MCP</text>
+  </g>
+</svg>
