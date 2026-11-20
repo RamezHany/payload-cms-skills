@@ -40,24 +40,35 @@ import 'server-only'
 
 import { APIError, type CollectionBeforeOperationHook } from 'payload'
 
-export const mcpDraftOnly: CollectionBeforeOperationHook = ({ args, operation, req }) => {
-  if (req.payloadAPI !== 'MCP') return args
+function asDraft<T>(data: T): T {
+  if (!data || typeof data !== 'object') return data
+  return { ...data, _status: 'draft' as const }
+}
 
-  if (operation === 'delete') {
+export const mcpDraftOnly: CollectionBeforeOperationHook = (hookArgs) => {
+  if (hookArgs.req.payloadAPI !== 'MCP') return hookArgs.args
+
+  if (hookArgs.operation === 'delete' || hookArgs.operation === 'deleteByID') {
     throw new APIError('MCP cannot delete documents', 403)
   }
 
-  if (operation !== 'create' && operation !== 'update') return args
+  if (hookArgs.operation === 'create') {
+    return { ...hookArgs.args, draft: true, data: asDraft(hookArgs.args.data) }
+  }
 
-  const data = args.data
-  const nextData =
-    data && typeof data === 'object'
-      ? { ...data, _status: 'draft' as const }
-      : data
+  if (hookArgs.operation === 'update') {
+    return { ...hookArgs.args, draft: true, data: asDraft(hookArgs.args.data) }
+  }
 
-  return { ...args, draft: true, data: nextData }
+  if (hookArgs.operation === 'updateByID') {
+    return { ...hookArgs.args, draft: true, data: asDraft(hookArgs.args.data) }
+  }
+
+  return hookArgs.args
 }
 ```
+
+If TypeScript rejects the spread inside `asDraft`, inline `{ ...hookArgs.args.data, _status: 'draft' as const }` in each write branch. That error also means the collection has no `versions.drafts`, so do not attach the hook. Do not cast the arguments.
 
 Attach it beside the existing hooks:
 
@@ -68,7 +79,7 @@ hooks: {
 },
 ```
 
-The create tool in 3.94.0 passes the model's `draft` argument through to `payload.create` and defaults it to `false`. The update tool does the same. This hook overwrites that argument before the write. Forcing `_status` to `'draft'` stops a model from sending `_status: 'published'` in the body.
+In Payload 3.94.0 the create tool passes the model's `draft` argument through to `payload.create` and defaults it to `false`. The update tool does the same with `payload.update`. An `id` makes the Local API call `updateByIDOperation` or `deleteByIDOperation` (`collections/operations/local/update.ts` and `delete.ts`). `beforeOperation` still receives `update` and `delete`, because `operationToHookOperation` maps `updateByID` to `update` and `deleteByID` to `delete` (`collections/operations/utilities/types.ts`). The type also allows the unmapped names, and a comment in `buildBeforeOperation.ts` says v4 should stop mapping them. This hook handles `update`, `updateByID`, `delete`, and `deleteByID`. Forcing `_status` to `'draft'` stops a model from sending `_status: 'published'` in the body.
 
 Only collections with `versions.drafts` get this hook. A draft write does not revalidate. Confirm the public page is unchanged and the admin shows a draft.
 

@@ -66,6 +66,8 @@ When `req.payloadAPI === 'MCP'`:
 - `create` and `update` run with `draft: true` and `_status: 'draft'`.
 - `delete` throws a 403 even if a later config enables the tool.
 
+In Payload 3.94.0, `beforeOperation` does not see the internal names `updateByID` and `deleteByID`. `operationToHookOperation` maps both to `update` and `delete` before the hook runs (`packages/payload/src/collections/operations/utilities/types.ts`). Local API `update` and `delete` with an `id` still enter `updateByID` and `deleteByID`, then that mapping. The hook also rejects `updateByID` and `deleteByID` so a future Payload that stops mapping those names cannot publish or delete through MCP. Handle both spellings. Do not handle only the ByID names.
+
 The plugin sets `req.payloadAPI` to `'MCP'`. Writes still pass through collection hooks, with `overrideAccess: false` and the key's user. A draft does not revalidate (the `payload-performance` skill). Publishing stays a human action in the admin.
 
 Do not attach this hook to a collection that has no drafts. `draft: true` there is an error.
