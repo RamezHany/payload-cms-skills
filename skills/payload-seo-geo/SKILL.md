@@ -39,7 +39,7 @@ Follow [references/metadata.md](references/metadata.md).
 
 Add `src/components/JsonLd.tsx` and `src/utilities/jsonLd.ts` from [references/json-ld.md](references/json-ld.md). Serialize with `JSON.stringify(data).replaceAll('<', '\\u003c')`.
 
-Builders: Organization or LocalBusiness, WebSite, BreadcrumbList, BlogPosting, Service, FAQPage, Person. Emit a node only when its required values exist. Name, address, and phone come from site-settings.
+Builders: Organization or LocalBusiness, WebSite, BreadcrumbList, BlogPosting, Service, FAQPage, Person. Emit a node only when its required values exist. The locale layout puts Organization and WebSite in one `JsonLd`, which is the `@graph` script. Site name, description, logo, and social profile URLs are the fields an admin edits under Settings, Site settings. Do not hardcode them. Name, address, and phone come from that same global.
 
 Checked against Google Search Central on 2026-11-20. Re-open the [Search Gallery](https://developers.google.com/search/docs/appearance/structured-data/search-gallery) before telling a client a rich result will show.
 
@@ -135,6 +135,8 @@ Detail queries keep `<collection>:<docSlug>` only. Listing queries keep `collect
 ## Done when
 
 - [ ] [Rich Results Test](https://search.google.com/test/rich-results) and [Schema Markup Validator](https://validator.schema.org/) accept the home page and a post
+- [ ] View source on the home page shows one `application/ld+json` script whose `@graph` includes `WebSite` and `Organization`, using the site name from Site settings
+- [ ] An admin, signed in, opens Settings then Site settings, changes the site name, logo, or a social URL, saves, and the next view-source shows that change. Sales cannot open the save action
 - [ ] View source on a post shows `rel="canonical"`, one `hreflang` per locale, and `hreflang="x-default"`
 - [ ] `curl.exe -s http://localhost:3000/llms.txt` prints markdown with one H2 per locale, and `/llm.txt`, `/llms`, and `/llm` return that same body with status 200
 - [ ] `curl.exe -s http://localhost:3000/robots.txt` matches the chosen policy and disallows `/admin` in every group
@@ -146,6 +148,7 @@ Detail queries keep `<collection>:<docSlug>` only. Listing queries keep `collect
 | Symptom | Cause | Fix |
 | --- | --- | --- |
 | Canonical host is localhost or `vercel.app` | `NEXT_PUBLIC_SERVER_URL` | Step 2 |
+| JSON-LD name, logo, or `sameAs` is missing or still a placeholder | Site settings fields are empty, or the layout hardcoded the graph | Settings, Site settings. Rebuild from `organizationNode` and `websiteNode` |
 | Open Graph image URL contains the site host plus `https://` | Absolute media URL was prefixed | Metadata reference, image helper |
 | Sitemap lists only unprefixed paths | Template URLs were left in place | Step 4 |
 | Admin policy does not change `/robots.txt` | `public/robots.txt` from next-sitemap | `generateRobotsTxt: false`, then delete that file |
