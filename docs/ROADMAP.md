@@ -21,6 +21,6 @@
 - **Project Pack.** The static page in [project-pack/index.html](../project-pack/index.html) collects the brief and downloads `PROJECT.md`, `AGENTS.md`, and the install command. No account and no server.
 - **Library MCP.** `node scripts/library-mcp.mjs` lists skills and reads the one that matches the task. This is the skills repository, not the Payload MCP plugin inside a website.
 
-## Later
+## Still open
 
-- **Payload 4**, after it is stable. Skills stay on Payload 3.x until the migration issue is closed. The `payload-v4` entry in [versions.json](../versions.json) records that policy. When the `payload` `latest` dist-tag reaches 4.x, the weekly workflow opens the drift issue, and the report tells you to open a migration issue before editing skills. The rule is in [VERSIONS.md](VERSIONS.md).
+- **Payload 4**, after it is stable. Every phase skill above is already written. Payload 4 is the remaining library work. Skills stay on Payload 3.x until the migration issue is closed. The `payload-v4` entry in [versions.json](../versions.json) records that policy. When the `payload` `latest` dist-tag reaches 4.x, the weekly workflow opens the drift issue, and the report tells you to open a migration issue before editing skills. The rule is in [VERSIONS.md](VERSIONS.md). On a client site, Design, Creative, and phases 1 through 8 still start unchecked in `PROJECT.md`.

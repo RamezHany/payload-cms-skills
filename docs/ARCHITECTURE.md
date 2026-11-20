@@ -39,7 +39,7 @@ flowchart TD
 
 The kickoff skill keeps only the phases the brief needs, in this order. The same list is in the repository README.
 
-When the brief includes a Figma URL, Design handoff (`figma-handoff`) comes before phase 1. When the design needs motion, 3D, or a copied component, Creative frontend (`creative-frontend`) comes after handoff and before bootstrap.
+When the brief includes a Figma URL, Design handoff (`figma-handoff`) comes before phase 1. When the design needs motion, 3D, or a copied component, Creative frontend (`creative-frontend`) comes after handoff and before bootstrap. Every phase below already has its skill in this repository. Payload 4 is the remaining library work and is not one of these phases.
 
 1. Architecture (`project-architecture`)
 2. Bootstrap and data model (`payload-bootstrap`)

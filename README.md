@@ -45,18 +45,22 @@ The kickoff skill writes these into `PROJECT.md` and works on one phase at a tim
 
 A Figma URL adds a design handoff before phase 1. Motion, 3D, or a copied component adds the creative frontend step after that handoff and before bootstrap.
 
-| Phase | Work | Skills |
-| --- | --- | --- |
-| Design | Only when the brief has a Figma file | `figma-handoff` |
-| Creative | Only when the design needs motion, 3D, or a copied component | `creative-frontend` |
-| 1 | Folder layout, and a refactor when the frontend already exists | `project-architecture` |
-| 2 | App shell and data model | `payload-bootstrap` |
-| 3 | Roles, admin brand, languages | `payload-auth-rbac`, `payload-admin-branding`, `payload-localization` |
-| 4 | Preview, media, SEO, legal pages | `payload-live-preview`, `payload-media`, `payload-seo-geo`, `payload-legal-trust` |
-| 5 | Forms, bookings, integrations, client MCP | `payload-forms-crm`, `payload-bookings-payments`, `payload-integrations`, `payload-mcp` |
-| 6 | Cache cost and speed | `payload-performance` |
-| 7 | Save, preview, and invalidation checks | `payload-testing` |
-| 8 | Vercel, migrations, env, cron | `payload-deploy-vercel` |
+**Written.** Every phase in this table has its skill in this repository. Design, Creative, and phases 1 through 8 are available to install.
+
+**Still open.** Payload 4, after it is stable. That is library work, not a client-site phase. Skills stay on Payload 3.x until the migration issue is closed. On a client site, the phases below still start unchecked in `PROJECT.md`.
+
+| Phase | In this repo | Work | Skills |
+| --- | --- | --- | --- |
+| Design | Written | Only when the brief has a Figma file | `figma-handoff` |
+| Creative | Written | Only when the design needs motion, 3D, or a copied component | `creative-frontend` |
+| 1 | Written | Folder layout, and a refactor when the frontend already exists | `project-architecture` |
+| 2 | Written | App shell and data model | `payload-bootstrap` |
+| 3 | Written | Roles, admin brand, languages | `payload-auth-rbac`, `payload-admin-branding`, `payload-localization` |
+| 4 | Written | Preview, media, SEO, legal pages | `payload-live-preview`, `payload-media`, `payload-seo-geo`, `payload-legal-trust` |
+| 5 | Written | Forms, bookings, integrations, client MCP | `payload-forms-crm`, `payload-bookings-payments`, `payload-integrations`, `payload-mcp` |
+| 6 | Written | Cache cost and speed | `payload-performance` |
+| 7 | Written | Save, preview, and invalidation checks | `payload-testing` |
+| 8 | Written | Vercel, migrations, env, cron | `payload-deploy-vercel` |
 
 The same checklist is what the [project pack](project-pack/index.html) writes into `PROJECT.md`.
 

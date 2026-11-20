@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.1] - 2026-11-20
+
+### Changed
+
+- README, the Pages site, and the roadmap say Design, Creative, and phases 1 through 8 are written. Payload 4 is the remaining library work. A client project still starts those phases unchecked.
+
 ## [1.2.0] - 2026-11-20
 
 ### Added
