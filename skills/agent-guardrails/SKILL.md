@@ -59,7 +59,7 @@ A script is allowed only when a skill ships it in `assets/` or `scripts/` and te
 ## 5. Secrets and data
 
 1. Never print, echo, log, or commit secret values. Refer to variables by name.
-2. Keep secrets in `.env.local` (development) and the hosting dashboard (production). Keep `.env.example` updated with names and placeholder values only.
+2. Keep secrets in the gitignored env file (`.env` from the Payload template) for development and in the hosting dashboard for production. Keep `.env.example` updated with names and placeholder values only.
 3. Never run `payload migrate:fresh`, `migrate:reset`, `migrate:down`, or drop tables against any database except a local development file.
 4. Never delete media, users, or submissions to "clean up" test data in a shared database.
 5. Never paste real customer data into code, tests, or seed files.
@@ -94,7 +94,7 @@ Before starting an overnight or turbo run:
 
 - [ ] One phase is selected in `PROJECT.md`
 - [ ] A feature branch is checked out
-- [ ] `.env.local` exists with the variables the phase needs; if not, skip tasks that need them
+- [ ] `.env` exists with the variables the phase needs; if not, skip tasks that need them
 
 During the run, follow sections 1 to 8 strictly. Never wait for input: record questions and continue with independent tasks.
 

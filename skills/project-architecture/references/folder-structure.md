@@ -16,6 +16,7 @@ Canonical tree for a localized site with a blog, booking, and payments. Remove f
 ├── src/
 │   ├── app/
 │   │   ├── (frontend)/
+│   │   │   ├── (sitemaps)/         from the template (pages-sitemap.xml, posts-sitemap.xml)
 │   │   │   ├── [locale]/
 │   │   │   │   ├── layout.tsx     html lang + dir, fonts, providers
 │   │   │   │   ├── page.tsx       home
@@ -37,8 +38,7 @@ Canonical tree for a localized site with a blog, booking, and payments. Remove f
 │   │   ├── api/
 │   │   │   └── webhooks/<provider>/route.ts
 │   │   ├── llms.txt/route.ts
-│   │   ├── robots.ts
-│   │   └── sitemap.ts
+│   │   └── llms-full.txt/route.ts
 │   ├── access/
 │   │   ├── anyone.ts
 │   │   ├── authenticated.ts

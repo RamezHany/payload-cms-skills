@@ -28,7 +28,7 @@ Full tree with examples: [references/folder-structure.md](references/folder-stru
 | Public routes | `src/app/(frontend)/` (or `src/app/(frontend)/[locale]/` when localized) |
 | Payload admin and REST routes | `src/app/(payload)/` (generated; only `custom.scss` is edited) |
 | Preview routes | `src/app/(frontend)/next/preview/route.ts`, `next/exit-preview/route.ts` |
-| Machine-readable routes | `src/app/llms.txt/route.ts`, `src/app/sitemap.ts`, `src/app/robots.ts` |
+| Machine-readable routes | `src/app/llms.txt/route.ts`, `src/app/llms-full.txt/route.ts`; sitemaps stay in the template's `src/app/(frontend)/(sitemaps)/` |
 | Collections | `src/collections/<Name>.ts`; becomes `src/collections/<Name>/index.ts` with `hooks/` and `access/` once it has hooks |
 | Globals | `src/globals/<Name>/config.ts` with `Component.tsx` and `hooks/` beside it |
 | Layout blocks | `src/blocks/<Name>/config.ts` + `Component.tsx` |
