@@ -1,0 +1,84 @@
+# Copy to .github/workflows/ci.yml
+# Action majors below follow the current setup examples for those actions.
+# If the README example uses a newer major, use that major:
+# - https://github.com/pnpm/action-setup
+# - https://github.com/actions/setup-node
+# - https://github.com/actions/checkout
+# - https://github.com/actions/upload-artifact
+# - https://playwright.dev/docs/ci
+# Workflow syntax: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      # Push creates the schema on this throwaway file. Production mode disables push.
+      NODE_ENV: development
+      DATABASE_URL: file:./.data/ci.db
+      NEXT_PUBLIC_SERVER_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate throwaway secrets
+        run: |
+          umask 077
+          mkdir -p .data
+          for name in PAYLOAD_SECRET PREVIEW_SECRET CRON_SECRET; do
+            value=$(openssl rand -hex 32)
+            echo "::add-mask::$value"
+            echo "$name=$value" >> "$GITHUB_ENV"
+          done
+
+      - name: Generate Payload types
+        run: pnpm generate:types
+
+      - name: Generate import map
+        run: pnpm generate:importmap
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+
+      - name: Vitest
+        run: pnpm test:int
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Playwright
+        run: pnpm test:e2e
+
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
