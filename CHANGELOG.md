@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-11-20
+
+### Added
+
+- Static documentation site in `docs/index.html` for GitHub Pages. The phase list is the main section. The published URL is `https://ramezhany.github.io/payload-cms-skills/`.
+
 ## [1.1.0] - 2026-11-20
 
 ### Added
