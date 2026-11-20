@@ -37,5 +37,5 @@
   <text x="90" y="299" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace" font-size="14.5" fill="#FFFFFF"><tspan fill="#0049FF" font-weight="bold">$</tspan> npx skills add RamezHany/payload-cms-skills</text>
 
   <!-- bottom row: stack specs -->
-  <text x="1204" y="299" text-anchor="end" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace" font-size="13.5" letter-spacing="1.5" fill="#E6E8ED" fill-opacity="0.8">PAYLOAD 3 / NEXT.JS / TYPESCRIPT / TURSO / VERCEL / MCP</text>
+  <text x="1204" y="299" text-anchor="end" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace" font-size="13.5" letter-spacing="1.5" fill="#E6E8ED" fill-opacity="0.8">PAYLOAD 3 / NEXT.JS / TYPESCRIPT / MCP</text>
 </svg>
