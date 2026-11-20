@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] - 2026-11-20
+
+### Added
+
+- README phase table for the kickoff order, including design handoff and creative frontend when the brief needs them.
+- `figma-handoff` and `creative-frontend` skills. Free libraries only, with a license record checked on 2026-11-20. Paid and Pro components stay out. recent.design stays blocked until its page states a license.
+- Static Project Pack page that downloads `PROJECT.md`, `AGENTS.md`, and the skills install command.
+- Stdio MCP server (`scripts/library-mcp.mjs`) that lists skills and reads one skill or one reference file.
+
 ## [1.0.0] - 2026-11-20
 
 ### Added

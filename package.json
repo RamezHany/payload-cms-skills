@@ -1,6 +1,6 @@
 {
   "name": "payload-cms-skills",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Agent Skills for building Payload CMS + Next.js websites on a free-tier-first stack.",
   "license": "MIT",
@@ -15,6 +15,7 @@
   },
   "scripts": {
     "validate": "node scripts/validate-skills.mjs",
-    "check:upstream": "node scripts/check-upstream.mjs"
+    "check:upstream": "node scripts/check-upstream.mjs",
+    "mcp": "node scripts/library-mcp.mjs"
   }
 }
